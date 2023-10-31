@@ -1,11 +1,13 @@
-import subRoutes from './routes/index';
-import { lazy } from 'react';
-import { Navigate } from 'react-router-dom';
-import AuthGuard from './auth/AuthGuard';
-import Loadable from './components/Loadable';
-import MatxLayout from './components/MatxLayout/MatxLayout';
+import subRoutes from './routes/index'
+import { lazy } from 'react'
+import { Navigate } from 'react-router-dom'
+import AuthGuard from './auth/AuthGuard'
+import Loadable from './components/Loadable'
+import MatxLayout from './components/MatxLayout/MatxLayout'
 
-const NotFound = Loadable(lazy(() => import('app/views/sessions/NotFound')));
+const NotFound = Loadable(lazy(() => import('app/views/sessions/NotFound')))
+const SigninPage = Loadable(lazy(() => import('app/views/sessions/SigninPage')))
+const SignupPage = Loadable(lazy(() => import('app/views/sessions/SignupPage')))
 
 const routes = [
   {
@@ -16,8 +18,11 @@ const routes = [
     ),
     children: subRoutes
   },
-  // session pages route
-  { path: '/', element: <Navigate to="/dashboard" /> },
+  // without session pages route
+  { path: '/', element: <Navigate to="/signin" /> },
+  { path: '/signup', element: <SignupPage /> },
+  { path: '/signin', element: <SigninPage /> },
+
   { path: '*', element: <NotFound /> }
 ];
 
