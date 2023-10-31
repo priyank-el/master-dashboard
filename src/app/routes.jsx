@@ -8,6 +8,7 @@ import MatxLayout from './components/MatxLayout/MatxLayout'
 const NotFound = Loadable(lazy(() => import('app/views/sessions/NotFound')))
 const SigninPage = Loadable(lazy(() => import('app/views/sessions/SigninPage')))
 const SignupPage = Loadable(lazy(() => import('app/views/sessions/SignupPage')))
+const ForgotPassword = Loadable(lazy(() => import('./views/sessions/ForgotPassword')))
 
 const routes = [
   {
@@ -22,6 +23,7 @@ const routes = [
   { path: '/', element: <Navigate to="/signin" /> },
   { path: '/signup', element: <SignupPage /> },
   { path: '/signin', element: <SigninPage /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
 
   { path: '*', element: <NotFound /> }
 ];

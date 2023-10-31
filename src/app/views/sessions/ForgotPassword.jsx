@@ -1,81 +1,42 @@
-import { Box, Button, Card, Grid, styled, TextField } from '@mui/material';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react"
+import { Link } from "react-router-dom"
 
-const FlexBox = styled(Box)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-}));
+function ForgotPassword() {
 
-const JustifyBox = styled(FlexBox)(() => ({
-  justifyContent: 'center',
-}));
-
-const ContentBox = styled(Box)(({ theme }) => ({
-  padding: 32,
-  background: theme.palette.background.default,
-}));
-
-const ForgotPasswordRoot = styled(JustifyBox)(() => ({
-  background: '#1A2038',
-  minHeight: '100vh !important',
-  '& .card': {
-    maxWidth: 800,
-    margin: '1rem',
-    borderRadius: 12,
-  },
-}));
-
-const ForgotPassword = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@example.com');
-
-  const handleFormSubmit = () => {
-    console.log(email);
-  };
+  const [buttonText, setButtonText] = useState("send otp")
 
   return (
-    <ForgotPasswordRoot>
-      <Card className="card">
-        <Grid container>
-          <Grid item xs={12}>
-            <JustifyBox p={4}>
-              <img width="300" src="/assets/images/illustrations/dreamer.svg" alt="" />
-            </JustifyBox>
+    <div class="container vh-100">
+      <div class="row h-100 mt-5">
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+        <div class="col-sm">
+          <div class="card text-center" style={{ width: "300px" }}>
+            <div class="card-header h5 text-white bg-primary">Password Reset</div>
+            <div class="card-body px-5">
+              <p class="card-text py-2">
+                Enter your registerd email for get otp
+              </p>
+              <div class="form-outline">
+                <input type="email" id="typeEmail" class="form-control my-3" />
+                <div>
+                  <label htmlFor="otpInput" className="text-start">Enter otp for verify</label>
+                </div>
+                <input type="text" id="otpInput" class="form-control my-3" />
+              </div>
+              <a href="#" class="btn btn-primary w-100">{buttonText}</a>
+              <div class="d-flex justify-content-between mt-4">
+                <Link className="text-primary"> Login</Link>
+                <Link className="text-primary"> Register</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm"></div>
+        <div class="col-sm"></div>
+      </div>
+    </div>
+  )
+}
 
-            <ContentBox>
-              <form onSubmit={handleFormSubmit}>
-                <TextField
-                  type="email"
-                  name="email"
-                  size="small"
-                  label="Email"
-                  value={email}
-                  variant="outlined"
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{ mb: 3, width: '100%' }}
-                />
-
-                <Button fullWidth variant="contained" color="primary" type="submit">
-                  Reset Password
-                </Button>
-
-                <Button
-                  fullWidth
-                  color="primary"
-                  variant="outlined"
-                  onClick={() => navigate(-1)}
-                  sx={{ mt: 2 }}
-                >
-                  Go Back
-                </Button>
-              </form>
-            </ContentBox>
-          </Grid>
-        </Grid>
-      </Card>
-    </ForgotPasswordRoot>
-  );
-};
-
-export default ForgotPassword;
+export default ForgotPassword
