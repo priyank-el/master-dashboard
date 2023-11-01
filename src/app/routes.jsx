@@ -10,6 +10,36 @@ const SigninPage = Loadable(lazy(() => import('app/views/sessions/SigninPage')))
 const SignupPage = Loadable(lazy(() => import('app/views/sessions/SignupPage')))
 const ForgotPassword = Loadable(lazy(() => import('./views/sessions/ForgotPassword')))
 
+const isAuthenticated = localStorage.getItem("JwtToken")
+
+const baseRoute =
+  isAuthenticated
+    ?
+    { path: '/', element: <Navigate to="/dashboard" /> }
+    :
+    { path: '/', element: <Navigate to="/signin" /> }
+
+const signup =
+  isAuthenticated
+    ?
+    { path: '/signup', element: <Navigate to="/dashboard" /> }
+    :
+    { path: '/signup', element: <SignupPage /> }
+
+const signin =
+  isAuthenticated
+    ?
+    { path: '/signin', element: <Navigate to="/dashboard" /> }
+    :
+    { path: '/signin', element: <SigninPage /> }
+
+const forgotPassword =
+  isAuthenticated
+    ?
+    { path: '/forgot-password', element: <Navigate to="/dashboard" /> }
+    :
+    { path: '/forgot-password', element: <ForgotPassword /> }
+
 const routes = [
   {
     element: (
@@ -20,10 +50,11 @@ const routes = [
     children: subRoutes
   },
   // without session pages route
-  { path: '/', element: <Navigate to="/signin" /> },
-  { path: '/signup', element: <SignupPage /> },
-  { path: '/signin', element: <SigninPage /> },
-  { path: '/forgot-password', element: <ForgotPassword /> },
+
+  baseRoute,
+  signup,
+  signin,
+  forgotPassword,
 
   { path: '*', element: <NotFound /> }
 ];

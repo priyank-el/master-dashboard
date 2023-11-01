@@ -26,8 +26,8 @@ function ForgotPassword() {
               </div>
               <a href="#" class="btn btn-primary w-100">{buttonText}</a>
               <div class="d-flex justify-content-between mt-4">
-                <Link className="text-primary"> Login</Link>
-                <Link className="text-primary"> Register</Link>
+                <Link to={'/signin'} className="text-primary"> Signin</Link>
+                <Link to={'/signup'} className="text-primary"> Signup</Link>
               </div>
             </div>
           </div>

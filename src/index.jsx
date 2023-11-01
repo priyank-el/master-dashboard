@@ -7,6 +7,9 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 // third party style
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
+import ContextProvider from 'app/providers/ContextProvider';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"
 
 const root = createRoot(document.getElementById('root'));
 
@@ -14,7 +17,10 @@ root.render(
   <StyledEngineProvider injectFirst>
     <BrowserRouter>
       <Provider store={store} >
-        <App />
+        <ToastContainer />
+        <ContextProvider>
+          <App />
+        </ContextProvider>
       </Provider>
     </BrowserRouter>
   </StyledEngineProvider>

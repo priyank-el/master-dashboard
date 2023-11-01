@@ -7,11 +7,21 @@ const userReducer = (state = {}, action) => {
                 ...state,
                 payload: action.payload
             }
-        // case actionType.CREATE_USER:
-        //     return {
-        //         ...state,
-        //         payload: action.payload
-        //     }
+        case actionType.CREATE_USER:
+            return {
+                ...state,
+                payload: action.payload
+            }
+        case actionType.SIGNIN_ADMIN:
+            return {
+                ...state,
+                payload: action.payload
+            }
+        case actionType.ERROR_MESSAGE:
+            return {
+                state: { success: false },
+                payload: action.payload
+            }
         // case actionType.UPDATE_USER:
         //     return {
         //         ...state,

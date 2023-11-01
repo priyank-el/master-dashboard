@@ -1,6 +1,38 @@
-import { Link } from "react-router-dom"
+import { useRef } from "react"
+import { useDispatch } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import { signinAdmin } from "store/actions/userActions"
 
 function SigninPage() {
+
+  const email = useRef()
+  const password = useRef()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const signInAdmin = async () => {
+    const dataObject = {
+      email: email.current.value,
+      password: password.current.value
+    }
+
+    try {
+      const data = await dispatch(signinAdmin(dataObject))
+      if (data.success) {
+        localStorage.setItem("JwtToken", data.data.token)
+        toast.success(data.message)
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  const onFinish = () => {
+    signInAdmin()
+  }
+
   return (
     <section className="vh-100" style={{ "backgroundColor": "#eee" }}>
       <div className="container h-100">
@@ -18,7 +50,7 @@ function SigninPage() {
                       <div className="d-flex flex-row align-items-center mb-4">
                         <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
                         <div className="form-outline flex-fill mb-0">
-                          <input type="email" id="form3Example3c" className="form-control" />
+                          <input type="email" name="email" ref={email} id="form3Example3c" className="form-control" />
                           <label className="form-label" htmlFor="form3Example3c">Registered Email</label>
                         </div>
                       </div>
@@ -26,17 +58,17 @@ function SigninPage() {
                       <div className="d-flex flex-row align-items-center mb-4">
                         <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
                         <div className="form-outline flex-fill mb-0">
-                          <input type="password" id="form3Example4c" className="form-control" />
+                          <input type="password" name="password" ref={password} id="form3Example4c" className="form-control" />
                           <label className="form-label" htmlFor="form3Example4c">Password</label>
                         </div>
                       </div>
 
                       <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button type="button" className="btn btn-primary">Login</button>
+                        <button onClick={onFinish} type="button" className="btn btn-primary">Login</button>
                       </div>
-                      <Link className="text-primary font-weight-bold">Forgot password</Link>
+                      <Link to={'/forgot-password'} className="text-primary font-weight-bold">Forgot password</Link>
                       <div>
-                        <Link className="text-secondary text-decoration-underline font-weight-bold">Create account first!!</Link>
+                        <Link to={'/signup'} className="text-secondary text-decoration-underline font-weight-bold">Create account first!!</Link>
                       </div>
                     </form>
 
