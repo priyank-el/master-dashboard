@@ -1,10 +1,9 @@
 import { useRef } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { Link } from "react-router-dom"
 import { registerAdmin } from "store/actions/userActions"
 import { toast } from 'react-toastify'
 import { useNavigate } from "react-router-dom"
-import { messages } from '../../../constants/allActions'
 
 function SignupPage() {
 
@@ -15,7 +14,6 @@ function SignupPage() {
     const navigate = useNavigate()
 
     const dispatch = useDispatch()
-    let { users } = useSelector((action) => action)
 
     const createAdmin = async () => {
         const adminData = {
@@ -26,9 +24,10 @@ function SignupPage() {
 
         try {
             const data = await dispatch(registerAdmin(adminData))
-
-            toast.success(data.message)
-            navigate('/signin')
+            if (data.success) {
+                toast.success(data.message)
+                navigate('/signin')
+            }
         } catch (error) {
             console.log(error)
         }
@@ -40,10 +39,6 @@ function SignupPage() {
 
     return (
         <section className="vh-100" style={{ "backgroundColor": "#eee" }}>
-            {
-                users?.state?.success === false &&
-                <h3 className="text-center text-danger">error</h3>
-            }
             <div className="container h-100">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                     <div className="col-lg-12 col-xl-11">

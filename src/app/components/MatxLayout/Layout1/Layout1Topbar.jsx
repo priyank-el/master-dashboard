@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Hidden,
@@ -14,14 +14,13 @@ import {
 
 import { MatxMenu, MatxSearchBox } from 'app/components';
 import { themeShadows } from 'app/components/MatxTheme/themeColors';
-import { NotificationProvider } from 'app/contexts/NotificationContext';
 // import useAuth from 'app/hooks/useAuth';
 import useSettings from 'app/hooks/useSettings';
 import { topBarHeight } from 'app/utils/constant';
 
 import { Span } from '../../Typography';
-// import NotificationBar from '../../NotificationBar/NotificationBar';
-import ShoppingCart from '../../ShoppingCart';
+import { toast } from 'react-toastify';
+import { messages } from 'constants/allActions';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.text.primary
@@ -82,10 +81,11 @@ const IconBox = styled('div')(({ theme }) => ({
 }));
 
 const Layout1Topbar = () => {
+
   const theme = useTheme();
   const { settings, updateSettings } = useSettings();
-  // const { logout, user } = useAuth();
   const isMdScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate()
 
   const updateSidebarMode = (sidebarSettings) => {
     updateSettings({ layout1Settings: { leftSidebar: { ...sidebarSettings } } });
@@ -101,6 +101,16 @@ const Layout1Topbar = () => {
     }
     updateSidebarMode({ mode });
   };
+
+  const logout = () => {
+    const token = localStorage.getItem("JwtToken")
+    if (token) {
+      localStorage.removeItem("JwtToken")
+      toast.success(messages.ADMIN_LOGGED_OUT)
+      navigate('/')
+    }
+    console.log("token not found");
+  }
 
   return (
     <TopbarRoot>
@@ -126,23 +136,16 @@ const Layout1Topbar = () => {
         </Box>
 
         <Box display="flex" alignItems="center">
-          <MatxSearchBox />
 
-          {/* <NotificationProvider>
-            {/* <NotificationBar /> */}
-          {/* </NotificationProvider> */}
-
-          <ShoppingCart />
+          {/* <MatxSearchBox /> */}
+          {/* <ShoppingCart /> */}
 
           <MatxMenu
             menuButton={
               <UserMenu>
                 <Hidden xsDown>
-                  {/* <Span>
-                    Hi <strong>{user.name}</strong>
-                  </Span> */}
                 </Hidden>
-                {/* <Avatar src={user.avatar} sx={{ cursor: 'pointer' }} /> */}
+                <Avatar className='ms-3' alt="Travis Howard" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=60&w=500&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnN8ZW58MHx8MHx8fDA%3D" />
               </UserMenu>
             }
           >
@@ -165,10 +168,10 @@ const Layout1Topbar = () => {
               <Span> Settings </Span>
             </StyledItem>
 
-            {/* <StyledItem onClick={logout}>
+            <StyledItem onClick={logout}>
               <Icon> power_settings_new </Icon>
               <Span> Logout </Span>
-            </StyledItem> */}
+            </StyledItem>
           </MatxMenu>
         </Box>
       </TopbarContainer>

@@ -12,5 +12,6 @@ export const actionType = {
 
 export const messages = {
     ADMIN_CREATED: "admin registered successfully",
-    ADMIN_LOGIN: "admin login successfully"
+    ADMIN_LOGIN: "admin login successfully",
+    ADMIN_LOGGED_OUT: "admin logged out"
 } 
