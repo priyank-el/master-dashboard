@@ -21,6 +21,10 @@ import { topBarHeight } from 'app/utils/constant';
 import { Span } from '../../Typography';
 import { toast } from 'react-toastify';
 import { messages } from 'constants/allActions';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { getProfileData } from 'store/actions/userActions';
+import { useState } from 'react';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.text.primary
@@ -83,6 +87,9 @@ const IconBox = styled('div')(({ theme }) => ({
 const Layout1Topbar = () => {
 
   const theme = useTheme();
+  const dispatch = useDispatch()
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
   const { settings, updateSettings } = useSettings();
   const isMdScreen = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate()
@@ -107,9 +114,27 @@ const Layout1Topbar = () => {
     if (token) {
       localStorage.removeItem("JwtToken")
       toast.success(messages.ADMIN_LOGGED_OUT)
-      navigate('/')
+      navigate('/signin')
     }
     console.log("token not found");
+  }
+
+  useEffect(() => {
+    getUser()
+  }, [])
+
+  const getUser = async () => {
+    setLoading(true)
+    const data = await dispatch(getProfileData())
+    if (data.success === true) {
+      console.log("data is -> ", data.data);
+      setUser(data.data)
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <h1 className='text-center'>Loading...</h1>
   }
 
   return (
@@ -136,16 +161,20 @@ const Layout1Topbar = () => {
         </Box>
 
         <Box display="flex" alignItems="center">
-
-          {/* <MatxSearchBox /> */}
-          {/* <ShoppingCart /> */}
-
           <MatxMenu
             menuButton={
               <UserMenu>
                 <Hidden xsDown>
                 </Hidden>
-                <Avatar className='ms-3' alt="Travis Howard" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=60&w=500&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnN8ZW58MHx8MHx8fDA%3D" />
+                {
+                  user?.profile
+                    ?
+                    < Avatar className='ms-3' alt="Travis Howard"
+                      src={`http://localhost:3003/uploads/admin/${user.profile}`} />
+                    :
+                    < Avatar className='ms-3' alt="Travis Howard"
+                      src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=60&w=500&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnN8ZW58MHx8MHx8fDA%3D" />
+                }
               </UserMenu>
             }
           >
@@ -157,15 +186,15 @@ const Layout1Topbar = () => {
             </StyledItem>
 
             <StyledItem>
-              <Link to="/page-layouts/user-profile">
+              <Link to="/profile">
                 <Icon> person </Icon>
                 <Span> Profile </Span>
               </Link>
             </StyledItem>
 
-            <StyledItem>
+            <StyledItem onClick={() => navigate('/update-password')}>
               <Icon> settings </Icon>
-              <Span> Settings </Span>
+              <Span> Update Password </Span>
             </StyledItem>
 
             <StyledItem onClick={logout}>

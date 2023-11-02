@@ -17,6 +17,21 @@ const userReducer = (state = {}, action) => {
                 ...state,
                 payload: action.payload
             }
+        case actionType.SEND_OTP:
+            return {
+                ...state,
+                payload: action.payload
+            }
+        case actionType.RESET_PASSWORD:
+            return {
+                ...state,
+                payload: action.payload
+            }
+        case actionType.FILE_UPLOADED:
+            return {
+                ...state,
+                payload: action.payload
+            }
         case actionType.ERROR_MESSAGE:
             return {
                 state: { success: false },

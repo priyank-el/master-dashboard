@@ -9,6 +9,7 @@ const NotFound = Loadable(lazy(() => import('app/views/sessions/NotFound')))
 const SigninPage = Loadable(lazy(() => import('app/views/sessions/SigninPage')))
 const SignupPage = Loadable(lazy(() => import('app/views/sessions/SignupPage')))
 const ForgotPassword = Loadable(lazy(() => import('./views/sessions/ForgotPassword')))
+const ResetPasswordView = Loadable(lazy(() => import('./views/sessions/ResetPasswordView')))
 
 const isAuthenticated = localStorage.getItem("JwtToken")
 
@@ -40,6 +41,13 @@ const forgotPassword =
     :
     { path: '/forgot-password', element: <ForgotPassword /> }
 
+const resetPassword =
+  isAuthenticated
+    ?
+    { path: '/reset-password', element: <Navigate to="/dashboard" /> }
+    :
+    { path: '/reset-password', element: <ResetPasswordView /> }
+
 const routes = [
   {
     element: (
@@ -55,6 +63,7 @@ const routes = [
   signup,
   signin,
   forgotPassword,
+  resetPassword,
 
   { path: '*', element: <NotFound /> }
 ];

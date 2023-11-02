@@ -24,10 +24,14 @@ function SignupPage() {
 
         try {
             const data = await dispatch(registerAdmin(adminData))
-            if (data.success) {
+            if (data.success === true) {
                 toast.success(data.message)
                 navigate('/signin')
+            } else {
+                console.log("data is -> ", data.response.data.error);
+                toast.error(data.response.data.error)
             }
+
         } catch (error) {
             console.log(error)
         }

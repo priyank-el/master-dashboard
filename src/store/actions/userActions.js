@@ -41,12 +41,7 @@ export const registerAdmin = (admin) => {
                 return successResponseHandler(messages.ADMIN_CREATED, data)
             }
         } catch (error) {
-            console.log(error)
-            dispatch({
-                type: actionType.ERROR_MESSAGE,
-                payload: error
-            })
-            return errorResponsehandler(error.message, error)
+            return errorResponsehandler(actionType.ERROR_MESSAGE, error)
         }
     }
 }
@@ -62,7 +57,135 @@ export const signinAdmin = (admin) => {
             })
             return successResponseHandler(messages.ADMIN_LOGIN, data)
         } catch (error) {
-
+            console.log(error);
         }
     }
+}
+
+export const sendOtpInEmail = (object) => {
+    const { email, type, otp } = object
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.post('http://localhost:3003/admin/forgot-password', { email: email, type, otp }, { headers: { env: "test" } })
+            if (data) {
+                // console.log("data is -> ", data)
+                dispatch({
+                    type: actionType.SEND_OTP,
+                    payload: data
+                })
+                return successResponseHandler(data.message, data)
+            }
+        } catch (error) {
+            console.log("error is -> ", error)
+            return errorResponsehandler(error, error)
+        }
+    }
+}
+
+export const resetPassword = (object) => {
+    const { email, newPassword } = object
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.put('http://localhost:3003/admin/reset-password', { email, newPassword }, { headers: { env: "test" } })
+            if (data) {
+                dispatch({
+                    type: actionType.RESET_PASSWORD,
+                    payload: data
+                })
+                return successResponseHandler(actionType.RESET_PASSWORD, data)
+            }
+        } catch (error) {
+            return errorResponsehandler(actionType.ERROR_MESSAGE, error)
+        }
+    }
+}
+
+export const getProfileData = () => {
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.get('http://localhost:3003/admin/profile', {
+                headers: {
+                    "env": "test",
+                    "Authorization": localStorage.getItem("JwtToken")
+                }
+            })
+            if (data) {
+                dispatch({
+                    type: actionType.GET_PROFILE,
+                    payload: data
+                })
+                return successResponseHandler("fetch userdata", data)
+            }
+        } catch (error) {
+            return errorResponsehandler(error.message, error)
+        }
+    }
+}
+
+export const updateAdminProfileData = (objectData) => {
+    const { name, email, mobile, address, image } = objectData
+
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.put('http://localhost:3003/admin/update-profile', { name, email, mobile, address, image }, { headers: { env: "test", Authorization: localStorage.getItem("JwtToken") } })
+            if (data) {
+                dispatch({
+                    type: actionType.UPDATE_PROFILE,
+                    payload: data
+                })
+                return successResponseHandler(messages.UPDATE_PROFILE, data)
+            }
+        } catch (error) {
+            return errorResponsehandler(actionType.ERROR_MESSAGE, error)
+        }
+    }
+}
+
+export const uploadFile = (formdata) => {
+    console.log("formData is -> ", formdata)
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.post('http://localhost:3003/admin/web/uploadImage/admin', formdata, {
+                headers: {
+                    "env": "test",
+                    "Content-Type": "multipart/form-data",
+                    "Authorization": localStorage.getItem("JwtToken")
+                }
+            })
+            if (data) {
+                dispatch({
+                    type: actionType.FILE_UPLOADED,
+                    payload: data
+                })
+                return successResponseHandler(messages.FILE_UPLOADED, data)
+            }
+        } catch (error) {
+            return errorResponsehandler(actionType.ERROR_MESSAGE, error)
+        }
+    }
+}
+
+export const updatePass = (object) => {
+    const { oldPass, newPass } = object
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.put('http://localhost:3003/admin/update-pass', { oldPass, newPass }, {
+                headers: {
+                    "env": "test",
+                    "Authorization": localStorage.getItem("JwtToken")
+                }
+            })
+
+            if (data) {
+                dispatch({
+                    type: actionType.UPDATE_PASSWORD,
+                    payload: data
+                })
+            }
+            return successResponseHandler(messages.UPDATE_PASSWORD, data)
+        } catch (error) {
+            return errorResponsehandler(actionType.ERROR_MESSAGE, error)
+        }
+    }
+
 }
