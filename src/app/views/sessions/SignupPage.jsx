@@ -4,41 +4,82 @@ import { Link } from "react-router-dom"
 import { registerAdmin } from "store/actions/userActions"
 import { toast } from 'react-toastify'
 import { useNavigate } from "react-router-dom"
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { useCallback } from "react"
+
+const schema = yup.object().shape({
+    // isPermission: yup.boolean().required(),
+    password: yup.string().min(5).required(),
+    confirmPassword: yup.string()
+        .oneOf([yup.ref('password'), null], 'Passwords must match'),
+    // .test('passwords-match', 'Passwords must match', function (value) {
+    //     return this.parent.password === value
+    // }),
+    email: yup.string().email().required(),
+    name: yup.string().required()
+})
 
 function SignupPage() {
 
-    const name = useRef()
-    const email = useRef()
-    const password = useRef()
+    // const name = useRef()
+    // const email = useRef()
+    // const password = useRef()
+
+    // HANDLING ONSUBMIT ACTION:
+    const handleOnSubmit = async (values) => {
+        console.log("values is ->", values)
+        const { name, email, password } = values
+        const dataObject = {
+            name,
+            email,
+            password
+        }
+        createAdmin(dataObject)
+    }
 
     const navigate = useNavigate()
-
     const dispatch = useDispatch()
 
-    const createAdmin = async () => {
-        const adminData = {
-            name: name.current.value,
-            email: email.current.value,
-            password: password.current.value
-        }
+    // INITIALIZING FORMIK HERE:
+    const formik = useFormik({
+        initialValues: {
+            password: "",
+            email: "",
+            name: ""
+        },
+        validationSchema: schema,
+        onSubmit: handleOnSubmit,
+    })
 
+    // HANDLING VALUES:
+    const setInputValue = useCallback(
+        (key, value) =>
+            formik.setValues({
+                ...formik.values,
+                [key]: value,
+            }),
+        [formik]
+    )
+
+    const createAdmin = async (objectdata) => {
         try {
-            const data = await dispatch(registerAdmin(adminData))
+            console.log("object data is -> ", objectdata);
+            const data = await dispatch(registerAdmin(objectdata))
+            // console.log("data is -> ", data.response.data.error);
             if (data.success === true) {
                 toast.success(data.message)
                 navigate('/signin')
-            } else {
-                console.log("data is -> ", data.response.data.error);
-                toast.error(data.response.data.error)
             }
-
+            else {
+                console.log(data);
+                if (data.error.response.status === 400) {
+                    toast.error("admin already exist with this email")
+                }
+            }
         } catch (error) {
-            console.log(error)
+            console.log("error is ->", error)
         }
-    }
-
-    const onFinish = () => {
-        createAdmin()
     }
 
     return (
@@ -53,49 +94,55 @@ function SignupPage() {
 
                                         <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
 
-                                        <form className="mx-1 mx-md-4">
+                                        <form className="mx-1 mx-md-4" onSubmit={formik.handleSubmit}>
 
                                             <div className="d-flex flex-row align-items-center mb-4">
                                                 <i className="fas fa-user fa-lg me-3 fa-fw"></i>
                                                 <div className="form-outline flex-fill mb-0">
-                                                    <input type="text" id="form3Example1c" ref={name} name="name" className="form-control" />
                                                     <label className="form-label" htmlFor="form3Example1c">Your Name</label>
+                                                    <input type="text" id="form3Example1c" name="name" className="form-control" value={formik.values.name} onChange={(e) => setInputValue("name", e.target.value)} />
+                                                    <small className="text-danger">{formik.errors.name}</small>
                                                 </div>
                                             </div>
 
                                             <div className="d-flex flex-row align-items-center mb-4">
                                                 <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
                                                 <div className="form-outline flex-fill mb-0">
-                                                    <input type="email" id="form3Example3c" ref={email} name="email" className="form-control" />
                                                     <label className="form-label" htmlFor="form3Example3c">Your Email</label>
+                                                    <input type="email" id="form3Example3c" name="email" className="form-control" value={formik.values.email} onChange={(e) => setInputValue("email", e.target.value)} />
+                                                    <small className="text-danger">{formik.errors.email}</small>
+
                                                 </div>
                                             </div>
 
                                             <div className="d-flex flex-row align-items-center mb-4">
                                                 <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
                                                 <div className="form-outline flex-fill mb-0">
-                                                    <input type="password" id="form3Example4c" ref={password} name="password" className="form-control" />
                                                     <label className="form-label" htmlFor="form3Example4c">Password</label>
+                                                    <input type="password" id="form3Example4c" name="password" className="form-control" value={formik.values.password} onChange={(e) => setInputValue("password", e.target.value)} />
+                                                    <small className="text-danger">{formik.errors.password}</small>
+
                                                 </div>
                                             </div>
 
                                             <div className="d-flex flex-row align-items-center mb-4">
                                                 <i className="fas fa-key fa-lg me-3 fa-fw"></i>
                                                 <div className="form-outline flex-fill mb-0">
-                                                    <input type="password" id="form3Example4cd" className="form-control" />
                                                     <label className="form-label" htmlFor="form3Example4cd">Repeat your password</label>
+                                                    <input type="password" id="form3Example4cd" name="confirmPassword" className="form-control" value={formik.values.confirmPassword} onChange={(e) => setInputValue("confirmPassword", e.target.value)} />
+                                                    <small className="text-danger">{formik.errors.confirmPassword}</small>
                                                 </div>
                                             </div>
 
-                                            <div className="form-check d-flex justify-content-center mb-5">
-                                                <input className="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
+                                            {/* <div className="form-check d-flex justify-content-center mb-5">
+                                                <input className="form-check-input me-2" type="checkbox" />
                                                 <label className="form-check-label" htmlFor="form2Example3">
                                                     I agree all statements in <a href="#!">Terms of service</a>
                                                 </label>
-                                            </div>
+                                            </div> */}
 
                                             <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                                <button onClick={onFinish} type="button" className="btn btn-primary">Register</button>
+                                                <button type="submit" className="btn btn-primary" disabled={!formik.isValid} >Register</button>
                                             </div>
                                             <Link to={'/signin'} className="text-primary">Already have an account</Link>
                                         </form>

@@ -38,6 +38,7 @@ export const registerAdmin = (admin) => {
                     type: actionType.CREATE_USER,
                     payload: data
                 })
+                console.log("data is found here -> ", data);
                 return successResponseHandler(messages.ADMIN_CREATED, data)
             }
         } catch (error) {
@@ -51,13 +52,15 @@ export const signinAdmin = (admin) => {
     return async (dispatch) => {
         try {
             const { data } = await axios.post('http://localhost:3003/admin/login', { email, password }, { headers: { env: "test" } })
+            console.log("data comes");
             dispatch({
                 type: actionType.SIGNIN_ADMIN,
                 payload: data
             })
             return successResponseHandler(messages.ADMIN_LOGIN, data)
         } catch (error) {
-            console.log(error);
+            console.log("error comes");
+            return errorResponsehandler(error.response.data.error, error)
         }
     }
 }
@@ -103,6 +106,7 @@ export const resetPassword = (object) => {
 export const getProfileData = () => {
     return async (dispatch) => {
         try {
+            // debugger
             const { data } = await axios.get('http://localhost:3003/admin/profile', {
                 headers: {
                     "env": "test",
@@ -161,6 +165,7 @@ export const uploadFile = (formdata) => {
             }
         } catch (error) {
             return errorResponsehandler(actionType.ERROR_MESSAGE, error)
+            // console.log(error);
         }
     }
 }

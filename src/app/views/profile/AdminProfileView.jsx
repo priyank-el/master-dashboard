@@ -42,8 +42,15 @@ function AdminProfileView() {
                                 <div className="col-md-4 gradient-custom text-center text-white"
                                 // style={{"border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;"}}
                                 >
-                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                        alt="Avatar" className="img-fluid my-5" style={{ width: "80px" }} />
+                                    {
+                                        user?.profile
+                                            ?
+                                            <img src={`http://localhost:3003/uploads/admin/${user.profile}`}
+                                                alt="Avatar" style={{ width: "100px", height: "100px", marginTop: "50px", borderRadius: "50%" }} />
+                                            :
+                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                                alt="Avatar" className="img-fluid my-5" style={{ width: "80px" }} />
+                                    }
 
                                     <i className="far fa-edit mb-5"></i>
                                 </div>

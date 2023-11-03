@@ -3,35 +3,70 @@ import { useDispatch } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { signinAdmin } from "store/actions/userActions"
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { useCallback } from "react"
+
+const schema = yup.object().shape({
+  password: yup.string().min(5).required(),
+  email: yup.string().email().required(),
+})
 
 function SigninPage() {
 
-  const email = useRef()
-  const password = useRef()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const signInAdmin = async () => {
+  // HANDLING ONSUBMIT ACTION:
+  const handleOnSubmit = async (values) => {
+    console.log("values is ->", values)
+    const { email, password } = values
     const dataObject = {
-      email: email.current.value,
-      password: password.current.value
+      email,
+      password
     }
+    signInAdmin(dataObject)
+  }
 
+  const signInAdmin = async (dataObject) => {
     try {
       const data = await dispatch(signinAdmin(dataObject))
-      if (data.success) {
+      if (data.success === true) {
         localStorage.setItem("JwtToken", data.data.token)
         toast.success(data.message)
         navigate('/dashboard')
+      } else {
+
+        // console.log("error is -> ", data)
+        // if (data.error.response.data.error) {
+        //   toast.error(data.error.response.data.error)
+        // }
+        toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.message)
+      console.log("error is ->", error)
     }
   }
 
-  const onFinish = () => {
-    signInAdmin()
-  }
+  // INITIALIZING FORMIK HERE:
+  const formik = useFormik({
+    initialValues: {
+      password: "",
+      email: "",
+    },
+    validationSchema: schema,
+    onSubmit: handleOnSubmit,
+  })
+
+  // HANDLING VALUES:
+  const setInputValue = useCallback(
+    (key, value) =>
+      formik.setValues({
+        ...formik.values,
+        [key]: value,
+      }),
+    [formik]
+  )
 
   return (
     <section className="vh-100" style={{ "backgroundColor": "#eee" }}>
@@ -45,26 +80,26 @@ function SigninPage() {
 
                     <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign In</p>
 
-                    <form className="mx-1 mx-md-4">
+                    <form className="mx-1 mx-md-4" onSubmit={formik.handleSubmit}>
 
                       <div className="d-flex flex-row align-items-center mb-4">
                         <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
                         <div className="form-outline flex-fill mb-0">
-                          <input type="email" name="email" ref={email} id="form3Example3c" className="form-control" />
                           <label className="form-label" htmlFor="form3Example3c">Registered Email</label>
+                          <input type="email" name="email" id="form3Example3c" className="form-control" value={formik.values.email} onChange={(e) => setInputValue("email", e.target.value)} />
+                          <small className="text-danger">{formik.errors.email}</small>
                         </div>
                       </div>
-
                       <div className="d-flex flex-row align-items-center mb-4">
                         <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
                         <div className="form-outline flex-fill mb-0">
-                          <input type="password" name="password" ref={password} id="form3Example4c" className="form-control" />
                           <label className="form-label" htmlFor="form3Example4c">Password</label>
+                          <input type="password" name="password" id="form3Example4c" className="form-control" value={formik.values.password} onChange={(e) => setInputValue("password", e.target.value)} />
+                          <small className="text-danger">{formik.errors.password}</small>
                         </div>
                       </div>
-
                       <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button onClick={onFinish} type="button" className="btn btn-primary">Login</button>
+                        <button type="submit" className="btn btn-primary" disabled={!formik.isValid} >Login</button>
                       </div>
                       <Link to={'/forgot-password'} className="text-primary font-weight-bold">Forgot password</Link>
                       <div>

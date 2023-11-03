@@ -12,7 +12,7 @@ export const actionType = {
     UPDATE_PASSWORD: "UPDATE_PASSWORD",
 
     // SOME ERROR OCCURS //
-    ERROR_MESSAGE: "ERROR_MESSAGE"
+    ERROR_MESSAGE: "something went wrong"
 }
 
 export const messages = {

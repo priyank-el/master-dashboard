@@ -114,9 +114,11 @@ const Layout1Topbar = () => {
     if (token) {
       localStorage.removeItem("JwtToken")
       toast.success(messages.ADMIN_LOGGED_OUT)
-      navigate('/signin')
+      navigate('/')
     }
-    console.log("token not found");
+    else {
+      console.log("token not found");
+    }
   }
 
   useEffect(() => {
@@ -130,6 +132,9 @@ const Layout1Topbar = () => {
       console.log("data is -> ", data.data);
       setUser(data.data)
       setLoading(false)
+    }
+    else {
+      console.log("fall in side..");
     }
   }
 
