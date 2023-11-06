@@ -51,7 +51,8 @@ const AppButton = () => {
     width: 500,
     height: 400,
     bgcolor: 'background.paper',
-    border: '1px solid #000',
+    border: '1px solid #fff',
+    borderRadius: '7px',
     boxShadow: 24,
     p: 4,
   }

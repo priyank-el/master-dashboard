@@ -33,7 +33,8 @@ export default function StepperForm() {
     width: 500,
     height: 300,
     bgcolor: 'background.paper',
-    border: '1px solid #000',
+    borderRadius: '12px',
+    border: '1px solid #fff',
     boxShadow: 24,
     p: 4,
   }
