@@ -2,8 +2,8 @@ import { lazy } from 'react';
 import Loadable from 'app/components/Loadable';
 
 const AppTable = Loadable(lazy(() => import('./tables/AppTable')));
-// const AppForm = Loadable(lazy(() => import('./forms/AppForm')));
-// const AppButton = Loadable(lazy(() => import('./buttons/AppButton')));
+const AppForm = Loadable(lazy(() => import('./forms/AppForm')));
+const AppButton = Loadable(lazy(() => import('./buttons/AppButton')));
 // const AppIcon = Loadable(lazy(() => import('./icons/AppIcon')));
 // const AppProgress = Loadable(lazy(() => import('./AppProgress')));
 // const AppMenu = Loadable(lazy(() => import('./menu/AppMenu')));
@@ -18,7 +18,8 @@ const AppTable = Loadable(lazy(() => import('./tables/AppTable')));
 
 const materialRoutes = [
   { path: '/users', element: <AppTable /> },
-  // { path: '/material/form', element: <AppForm /> },
+  { path: '/category', element: <AppForm /> },
+  { path: '/brands', element: <AppButton /> },
   // { path: '/material/buttons', element: <AppButton /> },
   // { path: '/material/icons', element: <AppIcon /> },
   // { path: '/material/progress', element: <AppProgress /> },

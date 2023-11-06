@@ -16,18 +16,23 @@ const Container = styled('div')(({ theme }) => ({
 const AppForm = () => {
   return (
     <Container>
-      <Box className="breadcrumb">
+      {/* <Box className="breadcrumb">
         <Breadcrumb routeSegments={[{ name: 'Material', path: '/material' }, { name: 'Form' }]} />
-      </Box>
+      </Box> */}
 
       <Stack spacing={3}>
-        <SimpleCard title="Simple Form">
+
+        <SimpleCard title="create category Form">
           <SimpleForm />
         </SimpleCard>
 
-        <SimpleCard title="stepper form">
+        <SimpleCard title="All categoies">
           <StepperForm />
         </SimpleCard>
+
+        {/* <SimpleCard title="stepper form">
+          <StepperForm />
+        </SimpleCard> */}
       </Stack>
     </Container>
   );

@@ -1,81 +1,155 @@
-import { Box } from "@mui/material";
-import Button from "@mui/material/Button";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import Typography from "@mui/material/Typography";
+
+import { Box, Button, CircularProgress, Grid, Icon, Modal, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Span } from "app/components/Typography";
 import React from "react";
-
-function getSteps() {
-  return ["Select master blaster campaign settings", "Create an ad group", "Create an ad"];
-}
-
-function getStepContent(stepIndex) {
-  switch (stepIndex) {
-    case 0:
-      return `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus non tincidunt velit. Quisque laoreet, lectus id tincidunt fringilla, eros est bibendum felis, sit amet lobortis ante sem non diam. Donec viverra a nisi eu eleifend. Mauris vel leo tempor, commodo felis in, sollicitudin velit. Nullam eu sem id lacus venenatis commodo nec a lacus. Donec in egestas justo. Quisque elementum diam felis. In a ullamcorper leo. In lorem urna, mollis in feugiat sed, aliquet nec diam. Mauris tempus dui at gravida pharetra. Etiam nec lectus metus. In dapibus placerat consequat. Quisque ornare ut lacus ac tempus. Pellentesque sed ornare tellus. Curabitur dictum turpis quam, at feugiat mi elementum a.`;
-
-    case 1:
-      return `Integer euismod dapibus sapien, a interdum augue blandit eget. Donec pellentesque, sapien iaculis dignissim sagittis, risus nulla auctor eros, sed suscipit eros mauris id lorem. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer porttitor mauris egestas consequat molestie. Nam egestas iaculis malesuada. Praesent sagittis venenatis finibus. Praesent porttitor ipsum et sapien cursus, eu mattis augue ornare.`;
-
-    case 2:
-      return `In laoreet, dui vel tristique facilisis, velit dui dictum diam, nec feugiat mi mauris eu nunc. Nullam auctor eget ante ac laoreet. Aliquam et ante ligula. Nam imperdiet augue magna, ac tincidunt neque mollis nec. Sed eu nunc sit amet tellus commodo elementum non sit amet sem. Etiam ipsum nibh, rutrum vel ultrices in, vulputate ac dolor. Morbi dictum lectus id orci dapibus, et faucibus nulla viverra. Nulla consectetur ex vitae pretium vehicula. Quisque varius tempor erat et semper. Vivamus consectetur, eros sit amet ornare facilisis, nulla felis laoreet tortor, sit amet egestas risus ipsum sed eros.`;
-
-    default:
-      return `Aenean arcu ligula, porttitor id neque imperdiet, congue convallis erat. Integer libero sapien, convallis a vulputate vel, pretium vulputate metus. Donec leo justo, viverra ut tempor commodo, laoreet eu velit. Donec vel sem quis velit pharetra elementum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam in commodo mauris. Ut iaculis ipsum velit.`;
-  }
-}
+import { useEffect } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { deleteCategory, fetchAllCategory, updateCategory } from "store/actions/categoryActions";
 
 export default function StepperForm() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = getSteps();
 
-  const handleNext = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const dispatch = useDispatch()
+  const { loading, category } = useSelector(state => state)
 
-  const handleBack = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  useEffect(() => {
+    dispatch(fetchAllCategory())
+  }, [])
 
-  const handleReset = () => setActiveStep(0);
+  const [open, setOpen] = useState(false);
+  const [updatedCategory, setCategory] = useState('')
+  const [status, setStatus] = useState('')
+  const [categoryObject, setCategoryObject] = useState({})
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 500,
+    height: 300,
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 24,
+    p: 4,
+  }
+
+  // console.log("category", categoryObject);
+
+  const handleChange = (e) => {
+    const category_name = e.target.value
+    setCategory(category_name)
+    // console.log(category_name);
+  }
+
+  const handleEdit = (category) => {
+    setCategory(category.categoryName)
+    setCategoryObject(category)
+    handleOpen(true)
+  }
+
+  const handleDelete = (category) => {
+    console.log(category._id);
+    dispatch(deleteCategory(category._id))
+  }
+
+  const updateHandler = (e) => {
+    e.preventDefault()
+    const objectData = {
+      id: categoryObject._id,
+      categoryName: updatedCategory
+    }
+    console.log("data is ->", objectData);
+    dispatch(updateCategory(objectData))
+    handleClose()
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex' }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
 
   return (
-    <Box>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+    <>
+      <Box>
+        {
+          Array.isArray(category.payload)
+            ?
+            <Table >
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">sr. no</TableCell>
+                  <TableCell align="center">Category Name</TableCell>
+                  <TableCell align="center">Status</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              {
+                category.payload.map((singleCategory, index) => {
+                  return (
+                    <TableBody>
+                      <TableCell align="center" key={index}>{index + 1}</TableCell>
+                      <TableCell align="center">{singleCategory.categoryName}</TableCell>
+                      <TableCell align="center">{singleCategory.status}</TableCell>
+                      <TableCell align="center">
+                        <Link onClick={() => handleEdit(singleCategory)}><Icon className="mx-2 text-secondary">edit</Icon></Link>
+                        <Link onClick={() => handleDelete(singleCategory)}><Icon className="mx-2 text-danger">delete</Icon></Link>
+                      </TableCell>
+                    </TableBody>
+                  )
+                })
 
-      <Box mt={4}>
-        {activeStep === steps.length ? (
-          <Box>
-            <Typography>All steps completed</Typography>
+              }
+            </Table>
+            :
+            <h1 className="text-center">No categories found..</h1>
+        }
 
-            <Button sx={{ mt: 2 }} variant="contained" color="secondary" onClick={handleReset}>
-              Reset
-            </Button>
-          </Box>
-        ) : (
-          <Box>
-            <Typography>{getStepContent(activeStep)}</Typography>
-
-            <Box pt={2}>
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-              >
-                Back
-              </Button>
-
-              <Button sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
-              </Button>
-            </Box>
-          </Box>
-        )}
       </Box>
-    </Box>
+      {/*  MODEL :- */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Update category
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <div>
+              <form >
+                <Grid container spacing={6}>
+                  <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+
+                    <TextField
+                      type="text"
+                      name="category_name"
+                      label="Category Name"
+                      value={updatedCategory}
+                      className="mb-5"
+                      onChange={handleChange}
+                    />
+                  </Grid>
+
+                </Grid>
+
+                <Button onClick={updateHandler} color="primary" variant="contained" type="button">
+                  <Span sx={{ pl: 1, textTransform: "capitalize" }}>update</Span>
+                </Button>
+              </form>
+            </div>
+          </Typography>
+        </Box>
+      </Modal>
+    </>
   );
 }

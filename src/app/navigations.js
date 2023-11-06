@@ -1,7 +1,10 @@
 export const navigations = [
   { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
   { label: 'PAGES', type: 'label' },
-  { name: 'users', path: '/users', iconText: 'T', icon: 'person' }
+  { name: 'users', path: '/users', iconText: 'T', icon: 'person' },
+  { name: 'category', path: '/category', iconText: 'C', icon: 'add' },
+  { name: 'brand', path: '/brands', iconText: 'B', icon: 'add' },
+
 ]
 
 

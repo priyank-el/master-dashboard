@@ -9,7 +9,8 @@ import {
   useMediaQuery,
   Box,
   styled,
-  useTheme
+  useTheme,
+  CircularProgress
 } from '@mui/material';
 
 import { MatxMenu, MatxSearchBox } from 'app/components';
@@ -139,7 +140,11 @@ const Layout1Topbar = () => {
   }
 
   if (loading) {
-    return <h1 className='text-center'>Loading...</h1>
+    return (
+      <Box sx={{ display: 'flex' }}>
+        <CircularProgress />
+      </Box>
+    )
   }
 
   return (

@@ -15,6 +15,20 @@ export const actionType = {
     ERROR_MESSAGE: "something went wrong"
 }
 
+export const categoryActionType = {
+    CREATE_CATEGORY: 'CREATE_CATEGORY',
+    FETCH_ALL_CATEGORIES: 'FETCH_ALL_CATEGORIES',
+    UPDATE_CATEGORIES: 'UPDATE_CATEGORIES',
+    DELETE_CATEGORY: 'DELETE_CATEGORY'
+}
+
+export const brandActionType = {
+    CREATE_BRAND: 'CREATE_BRAND',
+    FETCH_ALL_BRANDS: 'FETCH_ALL_BRANDS',
+    UPDATE_BRAND: 'UPDATE_BRAND',
+    DELETE_BRAND: 'DELETE_BRAND'
+}
+
 export const messages = {
     ADMIN_CREATED: "admin registered successfully",
     ADMIN_LOGIN: "admin login successfully",
@@ -25,4 +39,6 @@ export const messages = {
     FILE_UPLOADED: "file uploaded successfully",
     // GET_PROFILE: ""
     UPDATE_PASSWORD: "password updated successfully"
-} 
+}
+
+export const IS_LOADING = 'IS_LOADING'
