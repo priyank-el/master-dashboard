@@ -156,7 +156,6 @@ const AppButton = () => {
 
         <SimpleCard title="All brands">
           <BrandStepperForm />
-          {/* <StepperForm /> */}
         </SimpleCard>
 
 

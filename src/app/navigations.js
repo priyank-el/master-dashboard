@@ -4,6 +4,7 @@ export const navigations = [
   { name: 'users', path: '/users', iconText: 'T', icon: 'person' },
   { name: 'category', path: '/category', iconText: 'C', icon: 'add' },
   { name: 'brand', path: '/brands', iconText: 'B', icon: 'add' },
+  { name: 'products', path: '/product', iconText: 'P', icon: 'categoryOutlined' },
 
 ]
 
