@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { Box, Stack, styled } from "@mui/material";
 import { SimpleCard } from "app/components";
 import ProductAddForm from "../forms/ProductAddForm";
 import ProductListForm from "../forms/ProductListForm";
@@ -16,15 +16,19 @@ const Container = styled("div")(({ theme }) => ({
 const ProductAdd = () => {
   return (
     <Container>
-      <SimpleCard title="Products">
-        <SimpleCard title="Add Product">
+      <Stack spacing={3}>
+        {/* <SimpleCard title="Products"> */}
+        {/* <SimpleCard title="Add Product"> */}
+        <Box display={'flex'} justifyContent={'end'}>
           <ProductAddForm />
-        </SimpleCard>
+        </Box>
+        {/* </SimpleCard> */}
 
         <SimpleCard title="All Products">
           <ProductListForm />
         </SimpleCard>
-      </SimpleCard>
+        {/* </SimpleCard> */}
+      </Stack>
     </Container>
   );
 };

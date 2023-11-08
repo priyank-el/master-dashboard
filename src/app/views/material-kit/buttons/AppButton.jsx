@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, FormControl, Grid, Icon, InputLabel, Menu, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, Icon, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material';
 import { SimpleCard } from 'app/components';
 import { Span } from 'app/components/Typography';
@@ -28,34 +28,60 @@ const AppButton = () => {
     category_Id: '',
     brand_name: ''
   });
-  const handleOpen = () => setOpen(true);
+  const [error, setError] = useState({})
+  const handleOpen = () => {
+    setOpen(true)
+    setError({
+      category_Id: 'select any one category',
+      brand: 'brand is required'
+    })
+    setObjectData({
+      category_Id: '',
+      brand_name: ''
+    })
+  }
+
+  useEffect(() => {
+    let errorMessage = {}
+    if (objectData.category_Id.trim().length === 0) {
+      errorMessage.category_Id = 'select any one category'
+    }
+    if (objectData.brand_name.trim().length === 0) {
+      errorMessage.brand = 'brand is required'
+    }
+    setError(errorMessage)
+    console.log("errorMessage is ->", error)
+
+  }, [objectData])
+
   const handleClose = () => setOpen(false);
 
   const handleChange = (e) => {
-    const value = e.target.value
+    const value = e.target.value.trim()
     const name = e.target.name
     setObjectData({
       ...objectData,
       [name]: value,
     })
+
   }
 
   const dispatch = useDispatch()
   const { category, loading } = useSelector((state) => state)
 
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 500,
-    height: 400,
-    bgcolor: 'background.paper',
-    border: '1px solid #fff',
-    borderRadius: '7px',
-    boxShadow: 24,
-    p: 4,
-  }
+  // const style = {
+  //   position: 'absolute',
+  //   top: '50%',
+  //   left: '50%',
+  //   transform: 'translate(-50%, -50%)',
+  //   width: 500,
+  //   height: 400,
+  //   bgcolor: 'background.paper',
+  //   border: '1px solid #fff',
+  //   borderRadius: '7px',
+  //   boxShadow: 24,
+  //   p: 4,
+  // }
 
   const onFinish = () => {
     const dataObject = {
@@ -90,69 +116,65 @@ const AppButton = () => {
     <Container>
 
       <Stack spacing={3}>
-        <Box>
+        <Box display={'flex'} justifyContent={'end'}>
           <Button onClick={handleOpen} color="primary" variant="contained" type="submit">
             <Icon>add</Icon>
             <Span sx={{ pl: 1, textTransform: "capitalize" }}>add Brand</Span>
           </Button>
         </Box>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Add</DialogTitle>
+          <DialogContent>
+            <div>
+              <Grid container spacing={6}>
+                <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
 
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add brand
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <div>
-                <form >
-                  <Grid container spacing={6}>
-                    <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
-                      <Box>
-                        <FormControl fullWidth className='mb-5'>
-                          <InputLabel id="demo-simple-select-label">category</InputLabel>
+                  <FormControl fullWidth className='mb-1'>
+                    <InputLabel id="demo-simple-select-label">category</InputLabel>
 
-                          <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            name='category_Id'
-                            value={objectData.category_Id}
-                            label="Age"
-                            onChange={handleChange}
-                          >
-                            {
-                              category?.payload?.map((singleCategory, index) => (
-                                <MenuItem key={singleCategory._id} value={singleCategory._id} >{singleCategory.categoryName}</MenuItem>
-                              ))
-                            }
-                          </Select>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      style={{ width: "500px" }}
+                      name='category_Id'
+                      value={objectData.category_Id}
+                      label="category"
+                      onChange={handleChange}
+                    >
+                      {
+                        category?.payload?.map((singleCategory, index) => (
+                          <MenuItem key={singleCategory._id} value={singleCategory._id} >{singleCategory.categoryName}</MenuItem>
+                        ))
+                      }
+                    </Select>
+                    <span style={{ marginBottom: "100px" }} className='mb-3 text-danger'>{error.category_Id}</span>
+                  </FormControl>
+                  <TextField
+                    type="text"
+                    style={{ width: "500px" }}
+                    name="brand_name"
+                    label="Brand Name"
+                    value={objectData.brand_name}
+                    className="mb-1"
+                    onChange={handleChange}
+                  />
+                  <span className='mb-5 text-danger'>{error.brand}</span>
+                </Grid>
 
-                        </FormControl>
-                        <TextField
-                          type="text"
-                          name="brand_name"
-                          label="Brand Name"
-                          value={objectData.brand_name}
-                          className="mb-5"
-                          onChange={handleChange}
-                        />
-                      </Box>
-                    </Grid>
+              </Grid>
+            </div>
+          </DialogContent>
 
-                  </Grid>
+          <DialogActions>
+            <Button variant="outlined" onClick={handleClose}>
+              Cancel
+            </Button>
 
-                  <Button onClick={onFinish} color="primary" variant="contained" type="button">
-                    <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add</Span>
-                  </Button>
-                </form>
-              </div>
-            </Typography>
-          </Box>
-        </Modal>
+            <Button onClick={onFinish} color="primary" variant="contained" type="button" disabled={Object.keys(error).length > 0}>
+              <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add</Span>
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <SimpleCard title="All brands">
           <BrandStepperForm />

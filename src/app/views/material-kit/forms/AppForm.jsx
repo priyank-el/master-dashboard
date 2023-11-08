@@ -1,6 +1,6 @@
-import { Stack } from '@mui/material';
-import { Box, styled } from '@mui/material';
-import { Breadcrumb, SimpleCard } from 'app/components';
+import { Box, Stack } from '@mui/material';
+import { styled } from '@mui/material';
+import { SimpleCard } from 'app/components';
 import SimpleForm from './SimpleForm';
 import StepperForm from './StepperForm';
 
@@ -22,9 +22,11 @@ const AppForm = () => {
 
       <Stack spacing={3}>
 
-        <SimpleCard title="create category Form">
+        {/* <SimpleCard title="ad category"> */}
+        <Box display={'flex'} justifyContent={'end'}>
           <SimpleForm />
-        </SimpleCard>
+        </Box>
+        {/* </SimpleCard> */}
 
         <SimpleCard title="All categoies">
           <StepperForm />

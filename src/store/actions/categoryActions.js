@@ -15,6 +15,8 @@ export const createCategory = (dataObject) => {
                 return successResponseHandler(data.message, data)
             }
         } catch (error) {
+            // console.log("error is ->", error);
+            toast.error(error.response.data)
             return errorResponsehandler('something went wrong', error)
         }
     }

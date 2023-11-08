@@ -17,7 +17,8 @@ export const createBrand = (dataObject) => {
                 dispatch(fetchAllBrands())
             }
         } catch (error) {
-            console.log("error is -> ", error)
+            toast.error(error.response.data)
+            console.log("Error is -> ", error);
         }
     }
 }
