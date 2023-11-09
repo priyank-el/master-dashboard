@@ -215,9 +215,9 @@ export default function StepperForm() {
         <DialogTitle id="form-dialog-title">Update status</DialogTitle>
         <DialogContent>
           <div>
-            <div>
+            {/* <div>
               <span style={{ width: '300px' }} className="mb-5 text-secondary">current status is :- {selectedCategory.status}</span>
-            </div>
+            </div> */}
             <span style={{ width: '300px' }} className="mb-5">Are you sure you want to change status</span>
           </div>
         </DialogContent>
