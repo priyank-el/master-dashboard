@@ -66,7 +66,8 @@ export const deleteProductById = (_id) => {
 export const uploadProductImage = (formData) => {
     return async (dispatch) => {
         try {
-            const { data } = await axios.post('http://localhost:3003/admin/web/uploadImage/product', formData, { headers: { "env": "test", "Authorization": token } })
+            debugger
+            const { data } = await axios.post('http://localhost:3003/admin/web/uploadImage/product', formData, { headers: { "env": "test", "Authorization": token, "Content-Type": "multipart/form-data" } })
             if (data) {
                 dispatch({ type: productActionType.UPLOAD_IMAGE, payload: data })
                 return successResponseHandler('image uploaded', data)

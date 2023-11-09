@@ -1,8 +1,11 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, TextField } from '@mui/material';
 import { styled } from '@mui/material';
 import { SimpleCard } from 'app/components';
 import SimpleForm from './SimpleForm';
 import StepperForm from './StepperForm';
+import { Span } from 'app/components/Typography';
+import { fetchAllCategory } from 'store/actions/categoryActions';
+import { useDispatch } from 'react-redux';
 
 const Container = styled('div')(({ theme }) => ({
   margin: '30px',
@@ -14,6 +17,9 @@ const Container = styled('div')(({ theme }) => ({
 }));
 
 const AppForm = () => {
+
+  const dispatch = useDispatch()
+
   return (
     <Container>
       {/* <Box className="breadcrumb">
@@ -29,6 +35,14 @@ const AppForm = () => {
         {/* </SimpleCard> */}
 
         <SimpleCard title="All categoies">
+          <Box display={'flex'} justifyContent={'end'}>
+            <Span className='mt-3 px-3'>Search</Span>
+            <TextField onChange={(e) => {
+              e.preventDefault()
+              dispatch(fetchAllCategory(e.target.value))
+            }
+            } />
+          </Box>
           <StepperForm />
         </SimpleCard>
 

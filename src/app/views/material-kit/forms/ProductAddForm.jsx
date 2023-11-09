@@ -19,38 +19,22 @@ import { Span } from "app/components/Typography";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { fetchAllBrands, fetchBrandsByCategoryName } from "store/actions/brandActions";
 import { fetchAllCategory } from "store/actions/categoryActions";
 import { createProduct, fetchAllProducts, uploadProductImage } from "store/actions/productActions";
 
-import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { useCallback } from "react"
+import { useFormik } from "formik"
+import { useCallback } from "react";
 
 const schema = yup.object().shape({
-    productName: yup.string().min(5).required(),
+    productName: yup.string().required(),
     productDescription: yup.string().required(),
     category_Id: yup.string().required(),
-    brand_Id: yup.string().required(),
+    brand_Id: yup.string().required()
 })
 
 const ProductAddForm = () => {
-
-    const dispatch = useDispatch()
-    const { category, loading } = useSelector(state => state)
-    const [open, setOpen] = useState(false)
-
-    const handleClose = () => setOpen(false)
-    const onOpen = () => {
-        setOpen(true)
-        setobjectData({
-            product_name: "",
-            product_description: "",
-            category_Id: "",
-            brand_Id: ""
-        })
-    }
 
     useEffect(() => {
         dispatch(fetchAllCategory())
@@ -58,82 +42,35 @@ const ProductAddForm = () => {
         dispatch(fetchAllProducts())
     }, [])
 
-    const [objectData, setobjectData] = useState({
-        product_name: "",
-        product_description: "",
-        category_Id: "",
-        brand_Id: ""
-    })
+    const [open, setOpen] = useState(false)
+    const dispatch = useDispatch()
+    const { category, loading } = useSelector(state => state)
+
     const [brands, setBrands] = useState([])
-    const [error, setError] = useState({})
     const [imageFile, setImageFile] = useState('')
     const formdata = new FormData()
 
-    // const productNameChangeHandler = (e) => {
-    //     setobjectData(
-    //         { ...objectData, product_name: e.target.value }
-    //     )
-    // }
-    // const productDescriptionChangeHandler = (e) => {
-    //     setobjectData({ ...objectData, product_description: e.target.value })
-    // }
-
+    // IMAGE CHANGE HANDLER:-   
     const onImageChangeHandler = (e) => {
         setImageFile(e.target.files[0])
     }
 
-    // const categoryChangehandler = (event) => {
-    //     console.log("category is -> ", event.target.value)
-    //     setobjectData({ ...objectData, category_Id: event.target.value })
-    //     fetchBrandByCategory(event.target.value)
-    // }
-
-    // const brandChangeHandler = (event) => {
-    //     setobjectData({ ...objectData, brand_Id: event.target.value })
-    // }
-
-    // const fetchBrandByCategory = async (category) => {
-    //     const data = await dispatch(fetchBrandsByCategoryName(category))
-    //     console.log("data is -> ", data.data);
-    //     setBrands(data.data)
-    // }
-    // console.log("Brand is -> ", brands);
-
-    const onFinish = async () => {
-        if (Object.keys(error).length === 0) {
-            setOpen(false)
-            formdata.append('image', imageFile)
-            console.log("objectData is -> ", objectData);
-            console.log("image is -> ", imageFile);
-
-            let image;
-            if (imageFile) {
-                const data = await dispatch(uploadProductImage(formdata))
-                image = data.data.file_name
-            }
-            // console.log("Image is -> ", image);
-            if (!image) toast.error('image is required')
-            if (image) dispatch(createProduct(objectData, image))
-            setobjectData({
-                brand_Id: '',
-                category_Id: '',
-                product_description: '',
-                product_name: ''
-            })
-        }
+    // DIALOG OPEN HANDLER:-
+    const dialogOpenHandler = () => {
+        setOpen(true)
+        formik.values.productName = ''
+        formik.values.productDescription = ''
+        formik.values.category_Id = ''
+        formik.values.brand_Id = ''
     }
 
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex' }}>
-                <CircularProgress />
-            </Box>
-        )
+    // DIALOG CLOSE HANDLER:-
+    const dialogCloseHandler = () => {
+        setOpen(false)
     }
 
     // INITIALIZING FORMIK HERE:
     const formik = useFormik({
-        enableReinitialize: true,
         initialValues: {
             productName: "",
             productDescription: "",
@@ -142,10 +79,8 @@ const ProductAddForm = () => {
         },
         validationSchema: schema,
         onSubmit: async (values) => {
-
-            console.log("data is ->", values)
-
-        },
+            onFinish(values)
+        }
     })
 
     // HANDLING VALUES:
@@ -158,14 +93,43 @@ const ProductAddForm = () => {
         [formik]
     )
 
+    const onFinish = async ({ productName, productDescription, category_Id, brand_Id }) => {
+        let image = null
+        console.log("image file is -> ", imageFile)
+        if (imageFile) {
+            formdata.append('image', imageFile)
+            // console.log("form data is -> ", formdata)
+            const data = await dispatch(uploadProductImage(formdata))
+            image = data.data.file_name
+        }
+        console.log("image name is ->", image);
+        if (image) {
+            dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id }, image))
+        }
+    }
+
+    const fetBrandByName = async (categoryName) => {
+        const data = await dispatch(fetchBrandsByCategoryName(categoryName))
+        console.log("category id is => ", data);
+        setBrands(data.data)
+    }
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex' }}>
+                <CircularProgress />
+            </Box>
+        )
+    }
+
     return (
         <>
-            <Button onClick={onOpen} color="primary" variant="contained" type="submit">
+            <Button onClick={dialogOpenHandler} color="primary" variant="contained" type="submit">
                 <Icon>add</Icon>
                 <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add </Span>
             </Button>
-            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" >
-                <form onSubmit={formik.handleSubmit} >
+            <Dialog open={open} onClose={dialogCloseHandler} aria-labelledby="form-dialog-title" >
+                <form onSubmit={formik.handleSubmit}>
                     <DialogTitle id="form-dialog-title">Add Product</DialogTitle>
                     <DialogContent style={{ overflow: "hidden" }}>
 
@@ -179,9 +143,9 @@ const ProductAddForm = () => {
                                     name="productName"
                                     id="standard-basic"
                                     value={formik.values.productName}
-                                    onChange={(e) => setInputValue("name", e.target.value)}
+                                    onChange={(e) => setInputValue("productName", e.target.value)}
                                 />
-                                {/* <span className="mb-3 text-danger">{error.}</span> */}
+                                <span className="mb-3 text-danger">{formik.errors.productName}</span>
 
                                 <FormControl fullWidth className='mb-1 mt-2'>
                                     <InputLabel id="demo-simple-select-label">Category</InputLabel>
@@ -192,7 +156,10 @@ const ProductAddForm = () => {
                                         name='category_Id'
                                         label="Category"
                                         value={formik.values.category_Id}
-                                        onChange={(e) => setInputValue("category_Id", e.target.value)}
+                                        onChange={(e) => {
+                                            setInputValue("category_Id", e.target.value)
+                                            fetBrandByName(e.target.value)
+                                        }}
                                     >
                                         {
                                             category?.payload?.map((singleCategory) => (
@@ -200,7 +167,7 @@ const ProductAddForm = () => {
                                             ))
                                         }
                                     </Select>
-                                    <span className="mb-2 text-danger">{error.categoryName}</span>
+                                    <span className="mb-2 text-danger">{formik.errors.category_Id}</span>
                                 </FormControl>
                                 <FormControl fullWidth className='mb-5'>
                                     <InputLabel id="demo-simple-select-label">Brand</InputLabel>
@@ -219,7 +186,7 @@ const ProductAddForm = () => {
                                             ))
                                         }
                                     </Select>
-                                    <span className="mb-2 text-danger">{error.brandName}</span>
+                                    <span className="mb-2 text-danger">{formik.errors.brand_Id}</span>
 
                                 </FormControl>
 
@@ -235,7 +202,7 @@ const ProductAddForm = () => {
                                     value={formik.values.productDescription}
                                     onChange={(e) => setInputValue("productDescription", e.target.value)}
                                 />
-                                <span className="mb-2 text-danger">{error.productDescription}</span>
+                                <span className="mb-2 text-danger">{formik.errors.productDescription}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>
@@ -243,16 +210,14 @@ const ProductAddForm = () => {
 
                         </Grid>
 
-
-
                     </DialogContent>
 
                     <DialogActions>
-                        <Button variant="outlined" onClick={handleClose}>
+                        <Button variant="outlined" onClick={dialogCloseHandler}>
                             Cancel
                         </Button>
 
-                        <Button onClick={onFinish} color="primary" variant="contained" type="submit" >
+                        <Button color="primary" variant="contained" type="submit" >
                             add
                         </Button>
                     </DialogActions>

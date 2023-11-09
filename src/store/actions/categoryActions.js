@@ -11,31 +11,34 @@ export const createCategory = (dataObject) => {
             const { data } = await axios.post('http://localhost:3003/admin/add-category', { name: categoryName }, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
             if (data) {
                 dispatch({ type: categoryActionType.CREATE_CATEGORY, payload: data })
+                toast.success(data.message)
                 dispatch(fetchAllCategory())
-                return successResponseHandler(data.message, data)
+                // return successResponseHandler(data.message, data)
             }
         } catch (error) {
             // console.log("error is ->", error);
             toast.error(error.response.data)
-            return errorResponsehandler('something went wrong', error)
         }
     }
 }
 
-export const fetchAllCategory = () => {
+export const fetchAllCategory = (value) => {
     return async (dispatch) => {
         try {
             dispatch(isLoading(true))
             // debugger
-            const { data } = await axios.get('http://localhost:3003/admin/all-categories', { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
+            if (!value) value = ''
+            debugger
+            const { data } = await axios.get(`http://localhost:3003/admin/all-categories?value=${value}`, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
+
             // console.log("data -> ", data);
             if (data.length > 0) {
                 dispatch({ type: categoryActionType.FETCH_ALL_CATEGORIES, payload: data })
                 dispatch(isLoading(false))
-                return successResponseHandler('all-categories fetched', data)
+                // return successResponseHandler('all-categories fetched', data)
             }
         } catch (error) {
-            errorResponsehandler(error, error)
+            // errorResponsehandler(error, error)
         }
     }
 }
@@ -53,6 +56,21 @@ export const updateCategory = (dataObject) => {
             }
         } catch (error) {
             console.log("error", error)
+        }
+    }
+}
+
+export const updateCategoryStatus = (category_Id, status) => {
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.post('http://localhost:3003/admin/update-category-status', { _id: category_Id, status }, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
+            if (data) {
+                dispatch({ type: categoryActionType.UPDATE_STATUS, payload: data })
+                toast.success(data.message)
+                dispatch(fetchAllCategory())
+            }
+        } catch (error) {
+            console.log("Error is -> ", error);
         }
     }
 }

@@ -145,7 +145,7 @@ export default function BrandStepperForm() {
                     rowsPerPage={rowsPerPage}
                     count={brand?.payload?.length}
                     onPageChange={handleChangePage}
-                    rowsPerPageOptions={[5, 10]}
+                    rowsPerPageOptions={[1, 5, 10]}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     nextIconButtonProps={{ "aria-label": "Next Page" }}
                     backIconButtonProps={{ "aria-label": "Previous Page" }}

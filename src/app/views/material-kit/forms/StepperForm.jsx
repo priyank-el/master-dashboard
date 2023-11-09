@@ -1,13 +1,13 @@
 
 import styled from "@emotion/styled";
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Modal, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
-import { Span } from "app/components/Typography";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Input, Modal, Table, TableBody, TableCell, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Small, Span } from "app/components/Typography";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteCategory, fetchAllCategory, updateCategory } from "store/actions/categoryActions";
+import { deleteCategory, fetchAllCategory, updateCategory, updateCategoryStatus } from "store/actions/categoryActions";
 
 export default function StepperForm() {
 
@@ -31,10 +31,17 @@ export default function StepperForm() {
   };
 
   const [open, setOpen] = useState(false);
+  const [openEvent, setOpenEvent] = useState(false);
   const [updatedCategory, setCategory] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState({})
   const [error, setError] = useState({})
-  // const [status, setStatus] = useState('')
   const [categoryObject, setCategoryObject] = useState({})
+
+  const handleOpenEvent = (categoryData) => {
+    setOpenEvent(true)
+    setSelectedCategory(categoryData)
+  }
+  const handleCloseEvent = () => setOpenEvent(false)
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -73,8 +80,9 @@ export default function StepperForm() {
     handleOpen(true)
   }
 
-  const handleDelete = (category) => {
-    console.log(category._id);
+  const handleDelete = (e, category) => {
+    // console.log(category._id);
+    // e.preventDefault()
     dispatch(deleteCategory(category._id))
   }
 
@@ -87,6 +95,11 @@ export default function StepperForm() {
     // console.log("data is ->", objectData);
     dispatch(updateCategory(objectData))
     handleClose()
+  }
+
+  const updateStatusHandler = () => {
+    dispatch(updateCategoryStatus(selectedCategory._id, selectedCategory.status))
+    setOpenEvent(false)
   }
 
   if (loading) {
@@ -128,10 +141,20 @@ export default function StepperForm() {
                   <TableRow key={index}>
                     <TableCell align="center">{index + 1}</TableCell>
                     <TableCell align="center">{singleCategory.categoryName}</TableCell>
-                    <TableCell align="center">{singleCategory.status}</TableCell>
+
+                    <TableCell onClick={() => handleOpenEvent(singleCategory)} align="center">
+                      {
+                        singleCategory.status === 'active'
+                          ?
+                          <small style={{ "color": "white", "backgroundColor": "green", "padding": "2px 9px", "borderRadius": "10px" }}>{singleCategory.status}</small>
+                          :
+                          <small style={{ "color": "white", "backgroundColor": "red", "padding": "2px 9px", "borderRadius": "10px" }}>{singleCategory.status}</small>
+                      }
+                    </TableCell>
+
                     <TableCell align="center">
                       <Link onClick={() => handleEdit(singleCategory)}><Icon className="mx-2 text-secondary">edit</Icon></Link>
-                      <Link onClick={() => handleDelete(singleCategory)}><Icon className="mx-2 text-danger">delete</Icon></Link>
+                      <Link onClick={(e) => handleDelete(e, singleCategory)}><Icon className="mx-2 text-danger">delete</Icon></Link>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -183,6 +206,29 @@ export default function StepperForm() {
 
           <Button onClick={updateHandler} color="primary" variant="contained" type="button" disabled={Object.keys(error).length > 0}>
             <Span sx={{ pl: 1, textTransform: "capitalize" }}>Upload</Span>
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* STATUS CHANGE DIALOG BOX */}
+      <Dialog open={openEvent} onClose={handleCloseEvent} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Update status</DialogTitle>
+        <DialogContent>
+          <div>
+            <div>
+              <span style={{ width: '300px' }} className="mb-5 text-secondary">current status is :- {selectedCategory.status}</span>
+            </div>
+            <span style={{ width: '300px' }} className="mb-5">Are you sure you want to change status</span>
+          </div>
+        </DialogContent>
+
+        <DialogActions>
+          <Button variant="outlined" onClick={handleCloseEvent}>
+            No
+          </Button>
+
+          <Button onClick={updateStatusHandler} color="primary" variant="contained" type="button" >
+            <Span sx={{ pl: 1, textTransform: "capitalize" }}>Yes</Span>
           </Button>
         </DialogActions>
       </Dialog>
