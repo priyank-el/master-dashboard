@@ -11,14 +11,13 @@ import {
   Input,
   TextField
 } from "@mui/material";
+import * as yup from 'yup'
 import { Span } from "app/components/Typography"
 import { useFormik } from "formik";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCategory } from "store/actions/categoryActions";
-
-import * as yup from 'yup'
 
 const schema = yup.object().shape({
   category: yup.string().required()
@@ -35,13 +34,13 @@ const SimpleForm = () => {
     formik.values.category = ''
   }
 
-  // DIALOG OPEN HANDLER:-
+  // DIALOG CLOSE HANDLER:-
   const dialogCloseHandler = () => {
     setOpen(false)
     formik.errors.category = ''
   }
 
-  // INITIALIZING FORMIK HERE:
+  // INITIALIZING FORMIK HERE:-
   const formik = useFormik({
     initialValues: {
       category: ""
@@ -52,7 +51,7 @@ const SimpleForm = () => {
     }
   })
 
-  // HANDLING VALUES:
+  // HANDLING VALUES:-
   const setInputValue = useCallback(
     (key, value) =>
       formik.setValues({
@@ -68,7 +67,6 @@ const SimpleForm = () => {
   }
 
   return (
-
     <>
       <Box>
         <Button onClick={dialogOpenHandler} color="primary" variant="contained" type="submit">
@@ -76,14 +74,12 @@ const SimpleForm = () => {
           <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add </Span>
         </Button>
       </Box>
-
       <Dialog open={open} onClose={dialogCloseHandler} aria-labelledby="form-dialog-title">
         <form onSubmit={formik.handleSubmit}>
           <DialogTitle id="form-dialog-title">Add Category</DialogTitle>
           <DialogContent>
             <Grid container spacing={6}>
               <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
-
                 <TextField
                   type="text"
                   style={{ width: "500px" }}
@@ -97,12 +93,10 @@ const SimpleForm = () => {
               </Grid>
             </Grid>
           </DialogContent>
-
           <DialogActions>
             <Button variant="outlined" onClick={dialogCloseHandler}>
               Cancel
             </Button>
-
             <Button color="primary" variant="contained" type="submit" >
               <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add</Span>
             </Button>

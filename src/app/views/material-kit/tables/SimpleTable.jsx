@@ -49,37 +49,48 @@ const SimpleTable = () => {
 
   return (
     <Box width="100%" overflow="auto">
-      <StyledTable>
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">username</TableCell>
-            <TableCell align="center">FirstName</TableCell>
-            <TableCell align="center">LastName</TableCell>
-            <TableCell align="center">Email</TableCell>
-            <TableCell align="center">Mobile</TableCell>
-            <TableCell align="right">Action</TableCell>
-          </TableRow>
-        </TableHead>
+      {
+        users?.payload?.length > 0
+          ?
+          <StyledTable>
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">username</TableCell>
+                <TableCell align="center">FirstName</TableCell>
+                <TableCell align="center">LastName</TableCell>
+                <TableCell align="center">Email</TableCell>
+                <TableCell align="center">Mobile</TableCell>
+                <TableCell align="right">Action</TableCell>
+              </TableRow>
+            </TableHead>
 
-        <TableBody>
-          {users.payload.length > 0 && users.payload.map((user, index) => (
-            <TableRow key={index}>
-              <TableCell align="left">{user.username}</TableCell>
-              <TableCell align="center">{user.firstName}</TableCell>
-              <TableCell align="center">{user.lastName}</TableCell>
-              <TableCell align="center">{user.email}</TableCell>
-              <TableCell align="center">{user.mobile}</TableCell>
-              <TableCell align="right">
-                <IconButton>
-                  <Icon color="error">deleteForever</Icon>
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </StyledTable>
+            <TableBody>
+              {
+                users.payload.map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell align="left">{user.username}</TableCell>
+                    <TableCell align="center">{user.firstName}</TableCell>
+                    <TableCell align="center">{user.lastName}</TableCell>
+                    <TableCell align="center">{user.email}</TableCell>
+                    <TableCell align="center">{user.mobile}</TableCell>
+                    <TableCell align="right">
+                      <IconButton>
+                        <Icon color="error">deleteForever</Icon>
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              }
+            </TableBody>
+          </StyledTable>
+          :
+          <Box justifyContent={"center"} sx={{ display: 'flex' }}>
+            <h2>No users found</h2>
+          </Box>
+      }
     </Box>
   );
 };
+
 
 export default SimpleTable;
