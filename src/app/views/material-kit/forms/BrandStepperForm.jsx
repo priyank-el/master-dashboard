@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteBrand, updateBrandById } from "store/actions/brandActions";
+import { deleteBrand, updateBrandById, updateBrandStatus } from "store/actions/brandActions";
 
 export default function BrandStepperForm() {
 
@@ -45,6 +45,8 @@ export default function BrandStepperForm() {
     const [rowsPerPage, setRowsPerPage] = useState(3);
 
     const [error, setError] = useState({})
+    const [openEvent, setOpenEvent] = useState(false);
+    const [selectedBrand, setSelectedBrand] = useState({})
     const dispatch = useDispatch()
     const { category } = useSelector(select => select)
 
@@ -106,6 +108,17 @@ export default function BrandStepperForm() {
         },
     }));
 
+    const handleOpenEvent = (brandData) => {
+        setOpenEvent(true)
+        setSelectedBrand(brandData)
+    }
+    const handleCloseEvent = () => setOpenEvent(false)
+
+    const updateStatusHandler = () => {
+        dispatch(updateBrandStatus(selectedBrand._id, selectedBrand.status))
+        setOpenEvent(false)
+    }
+
     return (
         <>
             <Box width="100%" overflow="auto">
@@ -128,7 +141,16 @@ export default function BrandStepperForm() {
                                         <TableCell align="center" key={index}>{index + 1}</TableCell>
                                         <TableCell align="center">{singleBrand.brandName}</TableCell>
                                         <TableCell align="center">{singleBrand.category.categoryName}</TableCell>
-                                        <TableCell align="center">{singleBrand.status}</TableCell>
+
+                                        <TableCell onClick={() => handleOpenEvent(singleBrand)} align="center">
+                                            {
+                                                singleBrand.status === 'active'
+                                                    ?
+                                                    <small style={{ "color": "white", "backgroundColor": "green", "padding": "2px 9px", "borderRadius": "10px" }}>{singleBrand.status}</small>
+                                                    :
+                                                    <small style={{ "color": "white", "backgroundColor": "red", "padding": "2px 9px", "borderRadius": "10px" }}>{singleBrand.status}</small>
+                                            }
+                                        </TableCell>
                                         <TableCell align="center">
                                             <Link onClick={() => handleEdit(singleBrand)}><Icon className="mx-2 text-secondary">edit</Icon></Link>
                                             <Link onClick={() => handleDelete(singleBrand)}><Icon className="mx-2 text-danger">delete</Icon></Link>
@@ -204,6 +226,29 @@ export default function BrandStepperForm() {
 
                     <Button onClick={updateHandler} color="primary" variant="contained" type="button" disabled={Object.keys(error).length > 0}>
                         <Span sx={{ pl: 1, textTransform: "capitalize" }}>update</Span>
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* STATUS CHANGE DIALOG BOX */}
+            <Dialog open={openEvent} onClose={handleCloseEvent} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Update status</DialogTitle>
+                <DialogContent>
+                    <div>
+                        {/* <div>
+              <span style={{ width: '300px' }} className="mb-5 text-secondary">current status is :- {selectedCategory.status}</span>
+            </div> */}
+                        <span style={{ width: '300px' }} className="mb-5">Are you sure you want to change status</span>
+                    </div>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button variant="outlined" onClick={handleCloseEvent}>
+                        No
+                    </Button>
+
+                    <Button onClick={updateStatusHandler} color="primary" variant="contained" type="button" >
+                        <Span sx={{ pl: 1, textTransform: "capitalize" }}>Yes</Span>
                     </Button>
                 </DialogActions>
             </Dialog>

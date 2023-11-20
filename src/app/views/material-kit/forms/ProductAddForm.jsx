@@ -1,4 +1,3 @@
-import { PhotoCamera } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -67,6 +66,10 @@ const ProductAddForm = () => {
     // DIALOG CLOSE HANDLER:-
     const dialogCloseHandler = () => {
         setOpen(false)
+        formik.errors.brand_Id = ''
+        formik.errors.category_Id = ''
+        formik.errors.productDescription = ''
+        formik.errors.productName = ''
     }
 
     // INITIALIZING FORMIK HERE:
@@ -79,6 +82,7 @@ const ProductAddForm = () => {
         },
         validationSchema: schema,
         onSubmit: async (values) => {
+            console.log("called..");
             onFinish(values)
         }
     })
@@ -108,7 +112,7 @@ const ProductAddForm = () => {
         }
     }
 
-    const fetBrandByName = async (categoryName) => {
+    const fetchBrandByName = async (categoryName) => {
         const data = await dispatch(fetchBrandsByCategoryName(categoryName))
         console.log("category id is => ", data);
         setBrands(data.data)
@@ -158,7 +162,7 @@ const ProductAddForm = () => {
                                         value={formik.values.category_Id}
                                         onChange={(e) => {
                                             setInputValue("category_Id", e.target.value)
-                                            fetBrandByName(e.target.value)
+                                            fetchBrandByName(e.target.value)
                                         }}
                                     >
                                         {

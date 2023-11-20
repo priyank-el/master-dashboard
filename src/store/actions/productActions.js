@@ -48,6 +48,21 @@ export const createProduct = (productData, productImage) => {
     }
 }
 
+export const updateProductStatus = (product_Id, status) => {
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.post('http://localhost:3003/admin/update-product-status', { _id: product_Id, status }, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
+            if (data) {
+                dispatch({ type: productActionType.UPDATE_STATUS, payload: data })
+                toast.success(data.message)
+                dispatch(fetchAllProducts())
+            }
+        } catch (error) {
+            console.log("Error is -> ", error);
+        }
+    }
+}
+
 export const deleteProductById = (_id) => {
     return async (dispatch) => {
         try {

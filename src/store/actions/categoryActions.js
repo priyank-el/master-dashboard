@@ -31,8 +31,8 @@ export const fetchAllCategory = (value) => {
             debugger
             const { data } = await axios.get(`http://localhost:3003/admin/all-categories?value=${value}`, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
 
-            // console.log("data -> ", data);
-            if (data.length > 0) {
+            console.log("data -> ", data);
+            if (data) {
                 dispatch({ type: categoryActionType.FETCH_ALL_CATEGORIES, payload: data })
                 dispatch(isLoading(false))
                 // return successResponseHandler('all-categories fetched', data)

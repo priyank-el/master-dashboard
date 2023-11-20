@@ -23,13 +23,14 @@ export const createBrand = (dataObject) => {
     }
 }
 
-export const fetchAllBrands = () => {
+export const fetchAllBrands = (value) => {
     return async (dispatch) => {
         dispatch(isLoading(true))
         try {
+            if (!value) value = ''
             debugger
-            const { data } = await axios.get('http://localhost:3003/admin/all-brands', { headers: { "env": "test", "Authorization": token } })
-            if (data.length > 0) {
+            const { data } = await axios.get(`http://localhost:3003/admin/all-brands?value=${value}`, { headers: { "env": "test", "Authorization": token } })
+            if (data) {
                 dispatch({ type: brandActionType.FETCH_ALL_BRANDS, payload: data })
                 dispatch(isLoading(false))
             }
@@ -51,6 +52,21 @@ export const updateBrandById = (brandData) => {
             }
         } catch (error) {
             console.log("error is -> ", error)
+        }
+    }
+}
+
+export const updateBrandStatus = (brand_Id, status) => {
+    return async (dispatch) => {
+        try {
+            const { data } = await axios.post('http://localhost:3003/admin/update-brand-status', { _id: brand_Id, status }, { headers: { 'env': 'test', 'Authorization': localStorage.getItem('JwtToken') } })
+            if (data) {
+                dispatch({ type: brandActionType.UPDATE_STATUS, payload: data })
+                toast.success(data.message)
+                dispatch(fetchAllBrands())
+            }
+        } catch (error) {
+            console.log("Error is -> ", error);
         }
     }
 }
