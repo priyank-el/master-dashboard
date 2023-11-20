@@ -71,7 +71,7 @@ function ProductListForm() {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex' }}>
+            <Box justifyContent={"center"} sx={{ display: 'flex' }}>
                 <CircularProgress />
             </Box>
         )
