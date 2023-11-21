@@ -109,6 +109,7 @@ const ProductAddForm = () => {
         console.log("image name is ->", image);
         if (image) {
             dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id }, image))
+            setOpen(false)
         }
     }
 

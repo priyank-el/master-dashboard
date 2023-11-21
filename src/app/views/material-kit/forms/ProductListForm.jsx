@@ -5,11 +5,13 @@ import React from 'react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { deleteProductById, updateProductStatus } from 'store/actions/productActions'
+import { deleteProductById, updateProduct, updateProductStatus, uploadProductImage } from 'store/actions/productActions'
 
 import * as yup from 'yup'
 import { useFormik } from "formik"
 import { useCallback } from "react";
+import { useEffect } from 'react'
+import { fetchBrandsByCategoryName } from 'store/actions/brandActions'
 
 const schema = yup.object().shape({
     productName: yup.string().required(),
@@ -25,25 +27,67 @@ function ProductListForm() {
 
     const [page, setPage] = useState(0);
     const [brands, setBrands] = useState([])
+    const [initialValues, setInitialValues] = useState({})
     const [open, setOpen] = useState(false)
     const [rowsPerPage, setRowsPerPage] = useState(1);
     const [productData, setProductData] = useState({});
     const [openEvent, setOpenEvent] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState({})
 
+    const [imageFile, setImageFile] = useState('')
+    const formdata = new FormData()
+
+    useEffect(() => {
+        setInitialValues(productData)
+        setFieldValue("productName", productData.productName);
+        setFieldValue("productDescription", productData.productDescription);
+        setFieldValue("category_Id", productData?.category?._id);
+        setFieldValue("brand_Id", productData?.brand?._id);
+    }, [productData])
+
+    // IMAGE CHANGE HANDLER:-   
+    const onImageChangeHandler = (e) => {
+        setImageFile(e.target.files[0])
+    }
+
     // INITIALIZING FORMIK HERE:
     const formik = useFormik({
         initialValues: {
-            productName: '',
-            productDescription: '',
-            category_Id: '',
-            brand_Id: ''
+            productName: initialValues.productName || "",
+            productDescription: initialValues.productDescription || "",
+            category_Id: initialValues?.category?._id || "",
+            brand_Id: initialValues?.brand?._id || ""
         },
         validationSchema: schema,
         onSubmit: async (values) => {
-            console.log("called..", values);
+            onFinish(values)
         }
     })
+
+    // HANDLING VALUES:
+    const setInputValue = useCallback(
+        (key, value) =>
+            formik.setValues({
+                ...formik.values,
+                [key]: value,
+            }),
+        [formik]
+    );
+
+    const onFinish = async ({ productName, productDescription, category_Id, brand_Id }) => {
+        let image = null
+        console.log("image file is -> ", imageFile)
+        if (imageFile) {
+            formdata.append('image', imageFile)
+            const data = await dispatch(uploadProductImage(formdata))
+            image = data.data.file_name
+        }
+        console.log("image name is ->", image);
+        if (image) {
+            dispatch(updateProduct(productData?._id, { product_name: productName, product_description: productDescription, category_Id, brand_Id }, image))
+            setOpen(false)
+        }
+    }
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);
@@ -87,18 +131,26 @@ function ProductListForm() {
         dispatch(updateProductStatus(selectedProduct._id, selectedProduct.status))
         setOpenEvent(false)
     }
+    const { setFieldValue, setFieldError } = formik;
 
-    const handleEdit = (productObject) => {
+    const handleEdit = async (productObject) => {
         setProductData(productObject)
+        try {
+            const allBrands = await dispatch(fetchBrandsByCategoryName(productObject?.category?._id))
+            console.log("all brands -> ", allBrands);
+            if (allBrands) {
+                setBrands(allBrands.data)
+            }
+        } catch (error) {
+            console.log(error);
+        }
         setOpen(true)
     }
 
     const dialogCloseHandler = () => {
         setOpen(false)
-    }
-
-    const onImageChangeHandler = () => {
-
+        formik.setFieldError('productName', "")
+        formik.setFieldError('productDescription', "")
     }
 
     return (
@@ -118,13 +170,13 @@ function ProductListForm() {
                     </TableHead>
                     <TableBody>
                         {
-                            products?.payload?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            Array.isArray(products.payload) && products?.payload?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((singleProduct, index) => (
                                     <TableRow key={index}>
                                         <TableCell align="center" key={index}>{index + 1}</TableCell>
                                         <TableCell align="center">{singleProduct.productName}</TableCell>
-                                        <TableCell align="center">{singleProduct.categoryName}</TableCell>
-                                        <TableCell align="center">{singleProduct.brandName}</TableCell>
+                                        <TableCell align="center">{singleProduct.category.categoryName}</TableCell>
+                                        <TableCell align="center">{singleProduct.brand.brandName}</TableCell>
                                         <TableCell align="center">
                                             <img src={`http://localhost:3003/uploads/product/${singleProduct.image}`} style={{ borderRadius: '10px' }} height={'60px'} width={'60px'} alt="image comes here" />
                                         </TableCell>
@@ -184,8 +236,8 @@ function ProductListForm() {
 
             { /* UPDATE PRODUCT DIALOG BOX */}
             <Dialog open={open} onClose={dialogCloseHandler} aria-labelledby="form-dialog-title" >
-                <form onSubmit={formik.submitForm}>
-                    <DialogTitle id="form-dialog-title">Add Product</DialogTitle>
+                <form onSubmit={formik.handleSubmit}>
+                    <DialogTitle id="form-dialog-title">Update Product</DialogTitle>
                     <DialogContent style={{ overflow: "hidden" }}>
 
                         <Grid container spacing={6}>
@@ -197,10 +249,10 @@ function ProductListForm() {
                                     label="Product Name"
                                     name="productName"
                                     id="standard-basic"
-                                    value={productData.productName}
-                                // onChange={(e) => setInputValue("productName", e.target.value)}
+                                    value={formik.values.productName}
+                                    onChange={(e) => setInputValue("productName", e.target.value)}
                                 />
-                                {/* <span className="mb-3 text-danger">{formik.errors.productName}</span> */}
+                                <span className="mb-3 text-danger">{formik.errors.productName || ""}</span>
 
                                 <FormControl fullWidth className='mb-1 mt-2'>
                                     <InputLabel id="demo-simple-select-label">Category</InputLabel>
@@ -210,11 +262,10 @@ function ProductListForm() {
                                         id="demo-simple-select"
                                         name='category_Id'
                                         label="Category"
-                                        value={productData.category_Id}
-                                    // onChange={(e) => {
-                                    //     setInputValue("category_Id", e.target.value)
-                                    //     fetchBrandByName(e.target.value)
-                                    // }}
+                                        value={formik.values.category_Id}
+                                        onChange={(e) => {
+                                            setInputValue("category_Id", e.target.value)
+                                        }}
                                     >
                                         {
                                             category?.payload?.map((singleCategory) => (
@@ -226,20 +277,19 @@ function ProductListForm() {
                                 </FormControl>
                                 <FormControl fullWidth className='mb-5'>
                                     <InputLabel id="demo-simple-select-label">Brand</InputLabel>
-
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
                                         name='brand_Id'
                                         label="Brand"
-                                        value={productData.brand_Id}
-                                    // onChange={(e) => setInputValue("brand_Id", e.target.value)}
+                                        value={formik.values.brand_Id}
+                                        onChange={(e) => setInputValue("brand_Id", e.target.value)}
                                     >
-                                        {/* {
-                                            brands.map((singleBrand) => (
+                                        {
+                                            brands?.map((singleBrand) => (
                                                 <MenuItem key={singleBrand._id} value={singleBrand._id} >{singleBrand.brandName}</MenuItem>
                                             ))
-                                        } */}
+                                        }
                                     </Select>
                                     {/* <span className="mb-2 text-danger">{formik.errors.brand_Id}</span> */}
 
@@ -254,10 +304,10 @@ function ProductListForm() {
                                     label="Product Description"
                                     name="productDescription"
                                     id="standard-basic"
-                                    value={productData.productDescription}
-                                // onChange={(e) => setInputValue("productDescription", e.target.value)}
+                                    value={formik.values.productDescription}
+                                    onChange={(e) => setInputValue("productDescription", e.target.value)}
                                 />
-                                {/* <span className="mb-2 text-danger">{formik.errors.productDescription}</span> */}
+                                <span className="mb-2 text-danger">{formik.errors.productDescription || ""}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>
@@ -273,7 +323,7 @@ function ProductListForm() {
                         </Button>
 
                         <Button color="primary" variant="contained" type="submit" >
-                            add
+                            update
                         </Button>
                     </DialogActions>
                 </form>
