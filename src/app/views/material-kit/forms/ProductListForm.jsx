@@ -134,6 +134,8 @@ function ProductListForm() {
     const { setFieldValue, setFieldError } = formik;
 
     const handleEdit = async (productObject) => {
+        formik.setFieldError('productName', "")
+        formik.setFieldError('productDescription', "")
         setProductData(productObject)
         try {
             const allBrands = await dispatch(fetchBrandsByCategoryName(productObject?.category?._id))

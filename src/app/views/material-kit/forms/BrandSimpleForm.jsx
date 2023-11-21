@@ -81,9 +81,9 @@ const SimpleBrand = () => {
     }, [])
 
     if (loading) {
-        return (<Box sx={{ display: 'flex' }}>
-            <CircularProgress />
-        </Box>)
+        return (
+            <Box sx={{ display: 'flex', justifyContent: "center" }}>
+            </Box>)
     }
 
     return (
