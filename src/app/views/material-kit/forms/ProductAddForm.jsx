@@ -30,7 +30,8 @@ const schema = yup.object().shape({
     productName: yup.string().required(),
     productDescription: yup.string().required(),
     category_Id: yup.string().required(),
-    brand_Id: yup.string().required()
+    brand_Id: yup.string().required(),
+    price: yup.string().required()
 })
 
 const ProductAddForm = () => {
@@ -61,6 +62,7 @@ const ProductAddForm = () => {
         formik.values.productDescription = ''
         formik.values.category_Id = ''
         formik.values.brand_Id = ''
+        formik.values.price = ''
     }
 
     // DIALOG CLOSE HANDLER:-
@@ -70,6 +72,7 @@ const ProductAddForm = () => {
         formik.errors.category_Id = ''
         formik.errors.productDescription = ''
         formik.errors.productName = ''
+        formik.errors.price = ''
     }
 
     // INITIALIZING FORMIK HERE:
@@ -78,7 +81,8 @@ const ProductAddForm = () => {
             productName: "",
             productDescription: "",
             category_Id: "",
-            brand_Id: ""
+            brand_Id: "",
+            price: ''
         },
         validationSchema: schema,
         onSubmit: async (values) => {
@@ -97,7 +101,7 @@ const ProductAddForm = () => {
         [formik]
     )
 
-    const onFinish = async ({ productName, productDescription, category_Id, brand_Id }) => {
+    const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price }) => {
         let image = null
         console.log("image file is -> ", imageFile)
         if (imageFile) {
@@ -108,7 +112,7 @@ const ProductAddForm = () => {
         }
         console.log("image name is ->", image);
         if (image) {
-            dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id }, image))
+            dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id, price }, image))
             setOpen(false)
         }
     }
@@ -208,11 +212,21 @@ const ProductAddForm = () => {
                                     onChange={(e) => setInputValue("productDescription", e.target.value)}
                                 />
                                 <span className="mb-2 text-danger">{formik.errors.productDescription}</span>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    className='mb-1 mt-2'
+                                    type="text"
+                                    label="Price"
+                                    name="Price"
+                                    id="standard-basic"
+                                    value={formik.values.price}
+                                    onChange={(e) => setInputValue("price", e.target.value)}
+                                />
+                                <span className="mb-2 text-danger">{formik.errors.price}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>
                             </Grid>
-
                         </Grid>
 
                     </DialogContent>

@@ -13,6 +13,7 @@ export const fetchAllProducts = (value) => {
             if (!value) value = ''
             value = value.trim()
             const { data } = await axios.get(`http://localhost:3003/admin/all-products?value=${value}`, { headers: { "env": "test", "Authorization": token } })
+            console.log("product data is -> ", data);
             if (data) {
                 dispatch({ type: productActionType.FETCH_ALL_PRODUCTS, payload: data })
                 dispatch(isLoading(false))
@@ -24,7 +25,7 @@ export const fetchAllProducts = (value) => {
 }
 
 export const createProduct = (productData, productImage) => {
-    const { product_name, product_description, category_Id, brand_Id } = productData
+    const { product_name, product_description, category_Id, brand_Id, price } = productData
     return async (dispatch) => {
         try {
             debugger
@@ -34,7 +35,8 @@ export const createProduct = (productData, productImage) => {
                     productDescription: product_description,
                     productCategory: category_Id,
                     productBrand: brand_Id,
-                    image: productImage
+                    image: productImage,
+                    price
                 },
                 { headers: { "env": "test", "Authorization": token } }
             )
