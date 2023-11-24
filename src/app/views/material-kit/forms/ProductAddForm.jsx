@@ -31,7 +31,8 @@ const schema = yup.object().shape({
     productDescription: yup.string().required(),
     category_Id: yup.string().required(),
     brand_Id: yup.string().required(),
-    price: yup.string().required()
+    price: yup.string().required(),
+    numberOfProducts: yup.string().required()
 })
 
 const ProductAddForm = () => {
@@ -63,6 +64,7 @@ const ProductAddForm = () => {
         formik.values.category_Id = ''
         formik.values.brand_Id = ''
         formik.values.price = ''
+        formik.values.numberOfProducts = ''
     }
 
     // DIALOG CLOSE HANDLER:-
@@ -73,6 +75,7 @@ const ProductAddForm = () => {
         formik.errors.productDescription = ''
         formik.errors.productName = ''
         formik.errors.price = ''
+        formik.errors.numberOfProducts = ''
     }
 
     // INITIALIZING FORMIK HERE:
@@ -82,7 +85,8 @@ const ProductAddForm = () => {
             productDescription: "",
             category_Id: "",
             brand_Id: "",
-            price: ''
+            price: '',
+            numberOfProducts: ''
         },
         validationSchema: schema,
         onSubmit: async (values) => {
@@ -214,7 +218,7 @@ const ProductAddForm = () => {
                                 <span className="mb-2 text-danger">{formik.errors.productDescription}</span>
                                 <TextField
                                     style={{ width: "100%" }}
-                                    className='mb-1 mt-2'
+                                    className='mb-1 mt-2 '
                                     type="text"
                                     label="Price"
                                     name="Price"
@@ -223,6 +227,20 @@ const ProductAddForm = () => {
                                     onChange={(e) => setInputValue("price", e.target.value)}
                                 />
                                 <span className="mb-2 text-danger">{formik.errors.price}</span>
+                                <input
+                                    style={{ width: "88%", border: "1px solid rgba(0,0,0,0.3)" }}
+                                    className='MuiInputBase-input MuiOutlinedInput-input css-10vjoz-MuiInputBase-input-MuiOutlinedInput-input rounded mt-1'
+                                    type="number"
+                                    min={1}
+                                    max={100}
+                                    label="Number Of Products"
+                                    name="numberOfProducts"
+                                    id="standard-basic"
+                                    placeholder="Number Of Products"
+                                    value={formik.values.numberOfProducts}
+                                    onChange={(e) => setInputValue("numberOfProducts", e.target.value)}
+                                />
+                                <span className="mb-2 text-danger">{formik.errors.numberOfProducts}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>
