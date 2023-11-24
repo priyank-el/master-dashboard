@@ -16,6 +16,7 @@ import { fetchBrandsByCategoryName } from 'store/actions/brandActions'
 const schema = yup.object().shape({
     productName: yup.string().required(),
     productDescription: yup.string().required(),
+    price: yup.string().required(),
     category_Id: yup.string().required(),
     brand_Id: yup.string().required()
 })
@@ -43,6 +44,7 @@ function ProductListForm() {
         setFieldValue("productDescription", productData.productDescription);
         setFieldValue("category_Id", productData?.category?._id);
         setFieldValue("brand_Id", productData?.brand?._id);
+        setFieldValue("price", productData.price);
     }, [productData])
 
     // IMAGE CHANGE HANDLER:-   
@@ -55,6 +57,7 @@ function ProductListForm() {
         initialValues: {
             productName: initialValues.productName || "",
             productDescription: initialValues.productDescription || "",
+            price: initialValues.price || "",
             category_Id: initialValues?.category?._id || "",
             brand_Id: initialValues?.brand?._id || ""
         },
@@ -134,6 +137,9 @@ function ProductListForm() {
     const { setFieldValue, setFieldError } = formik;
 
     const handleEdit = async (productObject) => {
+        formik.setFieldError('productName', "")
+        formik.setFieldError('productDescription', "")
+        formik.setFieldError('price', "")
         setProductData(productObject)
         try {
             const allBrands = await dispatch(fetchBrandsByCategoryName(productObject?.category?._id))
@@ -151,7 +157,10 @@ function ProductListForm() {
         setOpen(false)
         formik.setFieldError('productName', "")
         formik.setFieldError('productDescription', "")
+        formik.setFieldError('price', "")
     }
+
+    console.log("products => ", products);
 
     return (
         <>
@@ -163,6 +172,7 @@ function ProductListForm() {
                             <TableCell align="center">Product Name</TableCell>
                             <TableCell align="center">Product Category</TableCell>
                             <TableCell align="center">Product Brand</TableCell>
+                            <TableCell align="center">Price</TableCell>
                             <TableCell align="center">Product Image</TableCell>
                             <TableCell align="center">Status</TableCell>
                             <TableCell align="center">Actions</TableCell>
@@ -177,6 +187,7 @@ function ProductListForm() {
                                         <TableCell align="center">{singleProduct.productName}</TableCell>
                                         <TableCell align="center">{singleProduct.category.categoryName}</TableCell>
                                         <TableCell align="center">{singleProduct.brand.brandName}</TableCell>
+                                        <TableCell align="center">{singleProduct.price}$</TableCell>
                                         <TableCell align="center">
                                             <img src={`http://localhost:3003/uploads/product/${singleProduct.image}`} style={{ borderRadius: '10px' }} height={'60px'} width={'60px'} alt="image comes here" />
                                         </TableCell>
@@ -308,6 +319,16 @@ function ProductListForm() {
                                     onChange={(e) => setInputValue("productDescription", e.target.value)}
                                 />
                                 <span className="mb-2 text-danger">{formik.errors.productDescription || ""}</span>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    type="text"
+                                    label="Price"
+                                    name="Price"
+                                    id="standard-basic"
+                                    value={formik.values.price}
+                                    onChange={(e) => setInputValue("productDescription", e.target.value)}
+                                />
+                                <span className="mb-2 text-danger">{formik.errors.price || ""}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>

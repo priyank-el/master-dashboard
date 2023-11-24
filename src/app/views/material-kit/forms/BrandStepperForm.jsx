@@ -75,6 +75,7 @@ export default function BrandStepperForm() {
     // console.log(brandData);
     const updateHandler = () => {
         dispatch(updateBrandById(brandData))
+        setOpen(false)
     }
 
     const handleDelete = (brand) => {
@@ -83,7 +84,7 @@ export default function BrandStepperForm() {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', justifyContent: "center" }}>
                 <CircularProgress />
             </Box>
         )
@@ -140,7 +141,7 @@ export default function BrandStepperForm() {
                                     <TableRow key={index}>
                                         <TableCell align="center" key={index}>{index + 1}</TableCell>
                                         <TableCell align="center">{singleBrand.brandName}</TableCell>
-                                        <TableCell align="center">{singleBrand.category.categoryName}</TableCell>
+                                        <TableCell align="center">{singleBrand?.category?.categoryName}</TableCell>
 
                                         <TableCell onClick={() => handleOpenEvent(singleBrand)} align="center">
                                             {
