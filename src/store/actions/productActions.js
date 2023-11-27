@@ -25,7 +25,7 @@ export const fetchAllProducts = (value) => {
 }
 
 export const createProduct = (productData, productImage) => {
-    const { product_name, product_description, category_Id, brand_Id, price } = productData
+    const { product_name, product_description, category_Id, brand_Id, price,numberOfProducts } = productData
     return async (dispatch) => {
         try {
             debugger
@@ -36,10 +36,11 @@ export const createProduct = (productData, productImage) => {
                     productCategory: category_Id,
                     productBrand: brand_Id,
                     image: productImage,
+                    numberOfProducts:Number(numberOfProducts),
                     price
                 },
                 { headers: { "env": "test", "Authorization": token } }
-            )
+            ) 
 
             if (data) {
                 dispatch({ type: productActionType.CREATE_PRODUCT, payload: data })
@@ -52,7 +53,8 @@ export const createProduct = (productData, productImage) => {
     }
 }
 export const updateProduct = (id, productData, productImage) => {
-    const { product_name, product_description, category_Id, brand_Id } = productData
+    debugger
+    const { product_name, product_description, category_Id, brand_Id, price, numberOfProducts } = productData
     return async (dispatch) => {
         try {
             debugger
@@ -62,6 +64,8 @@ export const updateProduct = (id, productData, productImage) => {
                     productDescription: product_description,
                     productCategory: category_Id,
                     productBrand: brand_Id,
+                    numberOfProducts,
+                    price,
                     image: productImage
                 },
                 { headers: { "env": "test", "Authorization": token } }

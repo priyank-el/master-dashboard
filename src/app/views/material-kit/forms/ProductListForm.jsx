@@ -18,7 +18,9 @@ const schema = yup.object().shape({
     productDescription: yup.string().required(),
     price: yup.string().required(),
     category_Id: yup.string().required(),
-    brand_Id: yup.string().required()
+    brand_Id: yup.string().required(),
+    numberOfProducts: yup.string().required(),
+    price: yup.string().required()
 })
 
 function ProductListForm() {
@@ -45,6 +47,7 @@ function ProductListForm() {
         setFieldValue("category_Id", productData?.category?._id);
         setFieldValue("brand_Id", productData?.brand?._id);
         setFieldValue("price", productData.price);
+        setFieldValue("numberOfProducts", productData.numberOfProducts);
     }, [productData])
 
     // IMAGE CHANGE HANDLER:-   
@@ -59,10 +62,14 @@ function ProductListForm() {
             productDescription: initialValues.productDescription || "",
             price: initialValues.price || "",
             category_Id: initialValues?.category?._id || "",
-            brand_Id: initialValues?.brand?._id || ""
+            brand_Id: initialValues?.brand?._id || "",
+            numberOfProducts: initialValues.numberOfProducts || "",
+            price: initialValues.price || ""
         },
         validationSchema: schema,
         onSubmit: async (values) => {
+
+            // console.log('values ->', values);
             onFinish(values)
         }
     })
@@ -77,7 +84,9 @@ function ProductListForm() {
         [formik]
     );
 
-    const onFinish = async ({ productName, productDescription, category_Id, brand_Id }) => {
+    const onFinish = async ({ productName, productDescription, category_Id, brand_Id, numberOfProducts, price }) => {
+        // console.log('product data ->', productName);
+
         let image = null
         console.log("image file is -> ", imageFile)
         if (imageFile) {
@@ -87,7 +96,7 @@ function ProductListForm() {
         }
         console.log("image name is ->", image);
         if (image) {
-            dispatch(updateProduct(productData?._id, { product_name: productName, product_description: productDescription, category_Id, brand_Id }, image))
+            dispatch(updateProduct(productData?._id, { product_name: productName, product_description: productDescription, category_Id, brand_Id, price, numberOfProducts }, image))
             setOpen(false)
         }
     }
@@ -137,9 +146,11 @@ function ProductListForm() {
     const { setFieldValue, setFieldError } = formik;
 
     const handleEdit = async (productObject) => {
+        console.log({ productObject });
         formik.setFieldError('productName', "")
         formik.setFieldError('productDescription', "")
         formik.setFieldError('price', "")
+        formik.setFieldError('numberOfProducts', "")
         setProductData(productObject)
         try {
             const allBrands = await dispatch(fetchBrandsByCategoryName(productObject?.category?._id))
@@ -157,6 +168,7 @@ function ProductListForm() {
         setOpen(false)
         formik.setFieldError('productName', "")
         formik.setFieldError('productDescription', "")
+        formik.setFieldError('numberOfProducts', "")
         formik.setFieldError('price', "")
     }
 
@@ -323,12 +335,27 @@ function ProductListForm() {
                                     style={{ width: "100%" }}
                                     type="text"
                                     label="Price"
-                                    name="Price"
+                                    name="price"
                                     id="standard-basic"
+                                    className='mt-2'
                                     value={formik.values.price}
                                     onChange={(e) => setInputValue("productDescription", e.target.value)}
                                 />
                                 <span className="mb-2 text-danger">{formik.errors.price || ""}</span>
+                                <input
+                                    style={{ width: "88%", border: "1px solid rgba(0,0,0,0.3)" }}
+                                    className='MuiInputBase-input MuiOutlinedInput-input css-10vjoz-MuiInputBase-input-MuiOutlinedInput-input rounded mt-1'
+                                    type="number"
+                                    min={1}
+                                    max={100}
+                                    label="Number Of Products"
+                                    name="numberOfProducts"
+                                    id="standard-basic"
+                                    placeholder="Number Of Products"
+                                    value={formik.values.numberOfProducts}
+                                    onChange={(e) => setInputValue("numberOfProducts", e.target.value)}
+                                />
+                                <span className="mb-2 text-danger">{formik.errors.numberOfProducts}</span>
                                 <label className="mt-3" htmlFor="icon-button-file">
                                     <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
                                 </label>
