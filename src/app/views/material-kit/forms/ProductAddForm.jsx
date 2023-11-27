@@ -105,7 +105,7 @@ const ProductAddForm = () => {
         [formik]
     )
 
-    const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price }) => {
+    const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price, numberOfProducts }) => {
         let image = null
         console.log("image file is -> ", imageFile)
         if (imageFile) {
@@ -116,7 +116,7 @@ const ProductAddForm = () => {
         }
         console.log("image name is ->", image);
         if (image) {
-            dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id, price }, image))
+            dispatch(createProduct({ product_name: productName, product_description: productDescription, category_Id, brand_Id, price, numberOfProducts }, image))
             setOpen(false)
         }
     }
