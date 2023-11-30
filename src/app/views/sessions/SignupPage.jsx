@@ -4,31 +4,19 @@ import { Link } from "react-router-dom"
 import { registerAdmin } from "store/actions/userActions"
 import { toast } from 'react-toastify'
 import { useNavigate } from "react-router-dom"
-import { useFormik } from 'formik'
+import { Formik } from 'formik'
 import * as yup from 'yup'
-import { useCallback } from "react"
 
 const schema = yup.object().shape({
-    // isPermission: yup.boolean().required(),
-    password: yup.string().min(5).required(),
-    confirmPassword: yup.string()
-        .oneOf([yup.ref('password'), null], 'Passwords must match'),
-    // .test('passwords-match', 'Passwords must match', function (value) {
-    //     return this.parent.password === value
-    // }),
     email: yup.string().email().required(),
-    name: yup.string().required()
+    name: yup.string().required(),
+    password: yup.string().min(5).required()
 })
 
 function SignupPage() {
 
-    // const name = useRef()
-    // const email = useRef()
-    // const password = useRef()
-
     // HANDLING ONSUBMIT ACTION:
     const handleOnSubmit = async (values) => {
-        console.log("values is ->", values)
         const { name, email, password } = values
         const dataObject = {
             name,
@@ -40,27 +28,6 @@ function SignupPage() {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
-    // INITIALIZING FORMIK HERE:
-    const formik = useFormik({
-        initialValues: {
-            password: "",
-            email: "",
-            name: ""
-        },
-        validationSchema: schema,
-        onSubmit: handleOnSubmit,
-    })
-
-    // HANDLING VALUES:
-    const setInputValue = useCallback(
-        (key, value) =>
-            formik.setValues({
-                ...formik.values,
-                [key]: value,
-            }),
-        [formik]
-    )
 
     const createAdmin = async (objectdata) => {
         try {
@@ -94,58 +61,112 @@ function SignupPage() {
 
                                         <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
 
-                                        <form className="mx-1 mx-md-4" onSubmit={formik.handleSubmit}>
+                                        <Formik
+                                            initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
+                                            validationSchema={schema}
+                                            validate={values => {
 
-                                            <div className="d-flex flex-row align-items-center mb-4">
-                                                <i className="fas fa-user fa-lg me-3 fa-fw"></i>
-                                                <div className="form-outline flex-fill mb-0">
-                                                    <label className="form-label" htmlFor="form3Example1c">Your Name</label>
-                                                    <input type="text" id="form3Example1c" name="name" className="form-control" value={formik.values.name} onChange={(e) => setInputValue("name", e.target.value)} />
-                                                    <small className="text-danger">{formik.errors.name}</small>
+                                                const errors = {};
+                                                if (!values.name) errors.name = 'name is required.'
+                                                if (!values.email) errors.email = 'email is required.'
+                                                if (!values.password) errors.password = 'password is required.'
+                                                if (values.confirmPassword !== values.password) errors.confirmPassword = 'confirmPassword not match.'
+
+                                                return errors;
+                                            }}
+                                            onSubmit={(values) => {
+                                                handleOnSubmit(values)
+                                            }}
+                                        >{({
+                                            values,
+                                            errors,
+                                            touched,
+                                            handleChange,
+                                            handleBlur,
+                                            handleSubmit
+                                        }) => (
+                                            <form className="mx-1 mx-md-4" onSubmit={handleSubmit}>
+
+                                                <div className="d-flex flex-row align-items-center mb-4">
+                                                    <i className="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                    <div className="form-outline flex-fill mb-0">
+                                                        <label className="form-label" htmlFor="form3Example1c">Your Name</label>
+                                                        <input
+                                                            type="text"
+                                                            id="form3Example1c"
+                                                            name="name"
+                                                            className="form-control"
+                                                            value={values.name}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange} />
+                                                        <small className="text-danger">{errors.name && touched.name && errors.name}</small>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="d-flex flex-row align-items-center mb-4">
-                                                <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                                <div className="form-outline flex-fill mb-0">
-                                                    <label className="form-label" htmlFor="form3Example3c">Your Email</label>
-                                                    <input type="email" id="form3Example3c" name="email" className="form-control" value={formik.values.email} onChange={(e) => setInputValue("email", e.target.value)} />
-                                                    <small className="text-danger">{formik.errors.email}</small>
+                                                <div className="d-flex flex-row align-items-center mb-4">
+                                                    <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                                    <div className="form-outline flex-fill mb-0">
+                                                        <label className="form-label" htmlFor="form3Example3c">Your Email</label>
+                                                        <input
+                                                            type="email"
+                                                            id="form3Example3c"
+                                                            name="email"
+                                                            className="form-control"
+                                                            value={values.email}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange} />
+                                                        <small className="text-danger">{errors.email && touched.email && errors.email}</small>
 
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="d-flex flex-row align-items-center mb-4">
-                                                <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                                <div className="form-outline flex-fill mb-0">
-                                                    <label className="form-label" htmlFor="form3Example4c">Password</label>
-                                                    <input type="password" id="form3Example4c" name="password" className="form-control" value={formik.values.password} onChange={(e) => setInputValue("password", e.target.value)} />
-                                                    <small className="text-danger">{formik.errors.password}</small>
+                                                <div className="d-flex flex-row align-items-center mb-4">
+                                                    <i className="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                                    <div className="form-outline flex-fill mb-0">
+                                                        <label className="form-label" htmlFor="form3Example4c">Password</label>
+                                                        <input
+                                                            type="password"
+                                                            id="form3Example4c"
+                                                            name="password"
+                                                            className="form-control"
+                                                            value={values.password}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange} />
+                                                        <small className="text-danger">{errors.password && touched.password && errors.password}</small>
 
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="d-flex flex-row align-items-center mb-4">
-                                                <i className="fas fa-key fa-lg me-3 fa-fw"></i>
-                                                <div className="form-outline flex-fill mb-0">
-                                                    <label className="form-label" htmlFor="form3Example4cd">Repeat your password</label>
-                                                    <input type="password" id="form3Example4cd" name="confirmPassword" className="form-control" value={formik.values.confirmPassword} onChange={(e) => setInputValue("confirmPassword", e.target.value)} />
-                                                    <small className="text-danger">{formik.errors.confirmPassword}</small>
+                                                <div className="d-flex flex-row align-items-center mb-4">
+                                                    <i className="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                    <div className="form-outline flex-fill mb-0">
+                                                        <label className="form-label" htmlFor="form3Example4cd">Repeat your password</label>
+                                                        <input
+                                                            type="password"
+                                                            id="form3Example4cd"
+                                                            name="confirmPassword"
+                                                            className="form-control"
+                                                            value={values.confirmPassword}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange} />
+                                                        <small className="text-danger">{errors.confirmPassword && touched.confirmPassword && errors.confirmPassword}</small>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {/* <div className="form-check d-flex justify-content-center mb-5">
+                                                {/* <div className="form-check d-flex justify-content-center mb-5">
                                                 <input className="form-check-input me-2" type="checkbox" />
                                                 <label className="form-check-label" htmlFor="form2Example3">
                                                     I agree all statements in <a href="#!">Terms of service</a>
                                                 </label>
                                             </div> */}
 
-                                            <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                                <button type="submit" className="btn btn-primary" disabled={!formik.isValid} >Register</button>
-                                            </div>
-                                            <Link to={'/signin'} className="text-primary">Already have an account</Link>
-                                        </form>
+                                                <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                                    <button type="submit" className="btn btn-primary" >Register</button>
+                                                </div>
+                                                <Link to={'/signin'} className="text-primary">Already have an account</Link>
+                                            </form>
+                                        )}
+                                        </Formik>
 
                                     </div>
                                     <div className="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">

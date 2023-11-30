@@ -23,16 +23,15 @@ import { fetchAllCategory } from "store/actions/categoryActions";
 import { createProduct, fetchAllProducts, uploadProductImage } from "store/actions/productActions";
 
 import * as yup from 'yup'
-import { useFormik } from "formik"
-import { useCallback } from "react";
+import { Formik } from "formik"
 
 const schema = yup.object().shape({
     productName: yup.string().required(),
     productDescription: yup.string().required(),
     category_Id: yup.string().required(),
     brand_Id: yup.string().required(),
-    price: yup.string().required(),
-    numberOfProducts: yup.string().required()
+    price: yup.string().min(1).required(),
+    numberOfProducts: yup.string().min(1).required()
 })
 
 const ProductAddForm = () => {
@@ -59,51 +58,24 @@ const ProductAddForm = () => {
     // DIALOG OPEN HANDLER:-
     const dialogOpenHandler = () => {
         setOpen(true)
-        formik.values.productName = ''
-        formik.values.productDescription = ''
-        formik.values.category_Id = ''
-        formik.values.brand_Id = ''
-        formik.values.price = ''
-        formik.values.numberOfProducts = ''
+        // values.productName = ''
+        // formik.values.productDescription = ''
+        // formik.values.category_Id = ''
+        // formik.values.brand_Id = ''
+        // formik.values.price = ''
+        // formik.values.numberOfProducts = ''
     }
 
     // DIALOG CLOSE HANDLER:-
     const dialogCloseHandler = () => {
         setOpen(false)
-        formik.errors.brand_Id = ''
-        formik.errors.category_Id = ''
-        formik.errors.productDescription = ''
-        formik.errors.productName = ''
-        formik.errors.price = ''
-        formik.errors.numberOfProducts = ''
+        // formik.errors.brand_Id = ''
+        // formik.errors.category_Id = ''
+        // formik.errors.productDescription = ''
+        // formik.errors.productName = ''
+        // formik.errors.price = ''
+        // formik.errors.numberOfProducts = ''
     }
-
-    // INITIALIZING FORMIK HERE:
-    const formik = useFormik({
-        initialValues: {
-            productName: "",
-            productDescription: "",
-            category_Id: "",
-            brand_Id: "",
-            price: '',
-            numberOfProducts: ''
-        },
-        validationSchema: schema,
-        onSubmit: async (values) => {
-            console.log("called..");
-            onFinish(values)
-        }
-    })
-
-    // HANDLING VALUES:
-    const setInputValue = useCallback(
-        (key, value) =>
-            formik.setValues({
-                ...formik.values,
-                [key]: value,
-            }),
-        [formik]
-    )
 
     const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price, numberOfProducts }) => {
         let image = null
@@ -142,123 +114,167 @@ const ProductAddForm = () => {
                 <Span sx={{ pl: 1, textTransform: "capitalize" }}>Add </Span>
             </Button>
             <Dialog open={open} onClose={dialogCloseHandler} aria-labelledby="form-dialog-title" >
-                <form onSubmit={formik.handleSubmit}>
-                    <DialogTitle id="form-dialog-title">Add Product</DialogTitle>
-                    <DialogContent style={{ overflow: "hidden" }}>
 
-                        <Grid container spacing={6}>
-                            <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                <Formik
+                    initialValues={{
+                        productName: "",
+                        productDescription: "",
+                        category_Id: "",
+                        brand_Id: "",
+                        price: "",
+                        numberOfProducts: ""
+                    }}
+                    validationSchema={schema}
+                    validate={values => {
 
-                                <TextField
-                                    style={{ width: "100%" }}
-                                    type="text"
-                                    label="Product Name"
-                                    name="productName"
-                                    id="standard-basic"
-                                    value={formik.values.productName}
-                                    onChange={(e) => setInputValue("productName", e.target.value)}
-                                />
-                                <span className="mb-3 text-danger">{formik.errors.productName}</span>
+                        const errors = {};
+                        if (!values.productName) errors.productName = 'product name is required.'
+                        if (!values.productDescription) errors.productDescription = 'product description is required.'
+                        if (!values.category_Id) errors.category_Id = 'product category is required.'
+                        if (!values.brand_Id) errors.brand_Id = 'product brand is required.'
+                        if (!values.price) errors.price = 'price is required.'
+                        if (!values.numberOfProducts) errors.numberOfProducts = 'product quantity is required.'
 
-                                <FormControl fullWidth className='mb-1 mt-2'>
-                                    <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                        return errors;
+                    }}
+                    onSubmit={(values) => {
+                        onFinish(values)
+                    }}
+                >{({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit
+                }) => (
+                    <form onSubmit={handleSubmit}>
+                        <DialogTitle id="form-dialog-title">Add Product</DialogTitle>
+                        <DialogContent style={{ overflow: "hidden" }}>
 
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        name='category_Id'
-                                        label="Category"
-                                        value={formik.values.category_Id}
-                                        onChange={(e) => {
-                                            setInputValue("category_Id", e.target.value)
-                                            fetchBrandByName(e.target.value)
-                                        }}
-                                    >
-                                        {
-                                            category?.payload?.map((singleCategory) => (
-                                                <MenuItem key={singleCategory._id} value={singleCategory._id} >{singleCategory.categoryName}</MenuItem>
-                                            ))
-                                        }
-                                    </Select>
-                                    <span className="mb-2 text-danger">{formik.errors.category_Id}</span>
-                                </FormControl>
-                                <FormControl fullWidth className='mb-5'>
-                                    <InputLabel id="demo-simple-select-label">Brand</InputLabel>
+                            <Grid container spacing={6}>
+                                <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
 
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        name='brand_Id'
-                                        label="Brand"
-                                        value={formik.values.brand_Id}
-                                        onChange={(e) => setInputValue("brand_Id", e.target.value)}
-                                    >
-                                        {
-                                            brands.map((singleBrand) => (
-                                                <MenuItem key={singleBrand._id} value={singleBrand._id} >{singleBrand.brandName}</MenuItem>
-                                            ))
-                                        }
-                                    </Select>
-                                    <span className="mb-2 text-danger">{formik.errors.brand_Id}</span>
+                                    <TextField
+                                        style={{ width: "100%" }}
+                                        type="text"
+                                        label="Product Name"
+                                        name="productName"
+                                        id="standard-basic"
+                                        value={values.productName}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                    <span className="mb-3 text-danger">{errors.productName && touched.productName && errors.productName}</span>
 
-                                </FormControl>
+                                    <FormControl fullWidth className='mb-1 mt-2'>
+                                        <InputLabel id="demo-simple-select-label" value>Category</InputLabel>
 
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            name='category_Id'
+                                            label="Category"
+                                            value={values.category_Id}
+                                            onBlur={handleBlur}
+                                            onChange={(e) => {
+                                                handleChange(e)
+                                                fetchBrandByName(e.target.value)
+                                            }}
+                                        >
+                                            {
+                                                category?.payload?.map((singleCategory) => (
+                                                    <MenuItem key={singleCategory._id} value={singleCategory._id}>{singleCategory.categoryName}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                        <span className="mb-2 text-danger">{errors.category_Id && touched.category_Id && errors.category_Id}</span>
+                                    </FormControl>
+                                    <FormControl fullWidth className='mb-5'>
+                                        <InputLabel id="demo-simple-select-label">Brand</InputLabel>
+
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            name='brand_Id'
+                                            label="Brand"
+                                            value={values.brand_Id}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                        >
+                                            {
+                                                brands.map((singleBrand) => (
+                                                    <MenuItem key={singleBrand._id} value={singleBrand._id} >{singleBrand.brandName}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                        <span className="mb-2 text-danger">{errors.brand_Id && touched.brand_Id && errors.brand_Id}</span>
+
+                                    </FormControl>
+
+                                </Grid>
+
+                                <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
+                                    <TextField
+                                        style={{ width: "100%" }}
+                                        type="text"
+                                        label="Product Description"
+                                        name="productDescription"
+                                        id="standard-basic"
+                                        value={values.productDescription}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                    <span className="mb-2 text-danger">{errors.productDescription && touched.productDescription && errors.productDescription}</span>
+                                    <TextField
+                                        style={{ width: "100%" }}
+                                        className='mb-1 mt-2 '
+                                        type="text"
+                                        label="Price"
+                                        name="price"
+                                        id="standard-basic"
+                                        value={values.price}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                    <span className="mb-2 text-danger">{errors.price && touched.price && errors.price}</span>
+                                    <input
+                                        style={{ width: "88%", border: "1px solid rgba(0,0,0,0.3)" }}
+                                        className='MuiInputBase-input MuiOutlinedInput-input css-10vjoz-MuiInputBase-input-MuiOutlinedInput-input rounded mt-1'
+                                        type="number"
+                                        min={1}
+                                        max={100}
+                                        label="Number Of Products"
+                                        name="numberOfProducts"
+                                        id="standard-basic"
+                                        placeholder="Number Of Products"
+                                        value={values.numberOfProducts}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                    />
+                                    <span className="mb-2 text-danger">{errors.numberOfProducts && touched.numberOfProducts && errors.numberOfProducts}</span>
+                                    <label className="mt-3" htmlFor="icon-button-file">
+                                        <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
+                                    </label>
+                                </Grid>
                             </Grid>
 
-                            <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
-                                <TextField
-                                    style={{ width: "100%" }}
-                                    type="text"
-                                    label="Product Description"
-                                    name="productDescription"
-                                    id="standard-basic"
-                                    value={formik.values.productDescription}
-                                    onChange={(e) => setInputValue("productDescription", e.target.value)}
-                                />
-                                <span className="mb-2 text-danger">{formik.errors.productDescription}</span>
-                                <TextField
-                                    style={{ width: "100%" }}
-                                    className='mb-1 mt-2 '
-                                    type="text"
-                                    label="Price"
-                                    name="Price"
-                                    id="standard-basic"
-                                    value={formik.values.price}
-                                    onChange={(e) => setInputValue("price", e.target.value)}
-                                />
-                                <span className="mb-2 text-danger">{formik.errors.price}</span>
-                                <input
-                                    style={{ width: "88%", border: "1px solid rgba(0,0,0,0.3)" }}
-                                    className='MuiInputBase-input MuiOutlinedInput-input css-10vjoz-MuiInputBase-input-MuiOutlinedInput-input rounded mt-1'
-                                    type="number"
-                                    min={1}
-                                    max={100}
-                                    label="Number Of Products"
-                                    name="numberOfProducts"
-                                    id="standard-basic"
-                                    placeholder="Number Of Products"
-                                    value={formik.values.numberOfProducts}
-                                    onChange={(e) => setInputValue("numberOfProducts", e.target.value)}
-                                />
-                                <span className="mb-2 text-danger">{formik.errors.numberOfProducts}</span>
-                                <label className="mt-3" htmlFor="icon-button-file">
-                                    <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
-                                </label>
-                            </Grid>
-                        </Grid>
+                        </DialogContent>
 
-                    </DialogContent>
+                        <DialogActions>
+                            <Button variant="outlined" onClick={dialogCloseHandler}>
+                                Cancel
+                            </Button>
 
-                    <DialogActions>
-                        <Button variant="outlined" onClick={dialogCloseHandler}>
-                            Cancel
-                        </Button>
+                            <Button color="primary" variant="contained" type="submit" >
+                                add
+                            </Button>
+                        </DialogActions>
+                    </form>
+                )}
+                </Formik>
 
-                        <Button color="primary" variant="contained" type="submit" >
-                            add
-                        </Button>
-                    </DialogActions>
-                </form>
+
             </Dialog >
         </>
     );

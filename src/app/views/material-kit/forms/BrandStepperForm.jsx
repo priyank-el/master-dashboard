@@ -182,6 +182,7 @@ export default function BrandStepperForm() {
 
                 <DialogContent>
                     <div>
+
                         <form >
                             <Grid container spacing={6}>
                                 <Grid item lg={6} md={6} sm={12} xs={12} sx={{ mt: 2 }}>
