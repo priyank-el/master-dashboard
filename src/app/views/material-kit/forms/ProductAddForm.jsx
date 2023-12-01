@@ -58,23 +58,11 @@ const ProductAddForm = () => {
     // DIALOG OPEN HANDLER:-
     const dialogOpenHandler = () => {
         setOpen(true)
-        // values.productName = ''
-        // formik.values.productDescription = ''
-        // formik.values.category_Id = ''
-        // formik.values.brand_Id = ''
-        // formik.values.price = ''
-        // formik.values.numberOfProducts = ''
     }
 
     // DIALOG CLOSE HANDLER:-
     const dialogCloseHandler = () => {
         setOpen(false)
-        // formik.errors.brand_Id = ''
-        // formik.errors.category_Id = ''
-        // formik.errors.productDescription = ''
-        // formik.errors.productName = ''
-        // formik.errors.price = ''
-        // formik.errors.numberOfProducts = ''
     }
 
     const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price, numberOfProducts }) => {
@@ -254,7 +242,12 @@ const ProductAddForm = () => {
                                     />
                                     <span className="mb-2 text-danger">{errors.numberOfProducts && touched.numberOfProducts && errors.numberOfProducts}</span>
                                     <label className="mt-3" htmlFor="icon-button-file">
-                                        <input onChange={onImageChangeHandler} className="input" id="icon-button-file" type="file" />
+                                        <input
+                                            onChange={onImageChangeHandler}
+                                            className="input"
+                                            multiple="multiple"
+                                            id="icon-button-file"
+                                            type="file" />
                                     </label>
                                 </Grid>
                             </Grid>

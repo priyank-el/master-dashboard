@@ -201,7 +201,7 @@ function ProductListForm() {
                                         <TableCell align="center">{singleProduct.brand.brandName}</TableCell>
                                         <TableCell align="center">{singleProduct.price}$</TableCell>
                                         <TableCell align="center">
-                                            <img src={`http://localhost:3003/uploads/product/${singleProduct.image}`} style={{ borderRadius: '10px' }} height={'60px'} width={'60px'} alt="image comes here" />
+                                            <img src={`http://localhost:3003/uploads/product/${singleProduct.image[0]}`} style={{ borderRadius: '10px' }} height={'60px'} width={'60px'} alt="image comes here" />
                                         </TableCell>
                                         <TableCell onClick={() => handleOpenEvent(singleProduct)} align="center">
                                             {
