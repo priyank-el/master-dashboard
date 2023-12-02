@@ -47,12 +47,15 @@ const ProductAddForm = () => {
     const { category, loading } = useSelector(state => state)
 
     const [brands, setBrands] = useState([])
-    const [imageFile, setImageFile] = useState('')
+    const [imageFile, setImageFile] = useState([])
     const formdata = new FormData()
 
     // IMAGE CHANGE HANDLER:-   
     const onImageChangeHandler = (e) => {
-        setImageFile(e.target.files[0])
+        console.log({
+            images: e.target.files
+        });
+        setImageFile(e.target.files)
     }
 
     // DIALOG OPEN HANDLER:-
@@ -66,12 +69,15 @@ const ProductAddForm = () => {
     }
 
     const onFinish = async ({ productName, productDescription, category_Id, brand_Id, price, numberOfProducts }) => {
-        let image = null
+        let image = []
         console.log("image file is -> ", imageFile)
-        if (imageFile) {
-            formdata.append('image', imageFile)
-            // console.log("form data is -> ", formdata)
-            const data = await dispatch(uploadProductImage(formdata))
+        if (imageFile.length > 0) {
+            Array.isArray(imageFile) &&
+                imageFile?.map(image => {
+                    formdata.append('image', image)
+                })
+            console.log("form data is -> ", formdata)
+            const data = dispatch(uploadProductImage(formdata))
             image = data.data.file_name
         }
         console.log("image name is ->", image);
