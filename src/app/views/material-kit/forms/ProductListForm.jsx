@@ -185,6 +185,7 @@ function ProductListForm() {
                             <TableCell align="center">Product Category</TableCell>
                             <TableCell align="center">Product Brand</TableCell>
                             <TableCell align="center">Price</TableCell>
+                            <TableCell align="center">Discount</TableCell>
                             <TableCell align="center">Product Image</TableCell>
                             <TableCell align="center">Status</TableCell>
                             <TableCell align="center">Actions</TableCell>
@@ -200,6 +201,7 @@ function ProductListForm() {
                                         <TableCell align="center">{singleProduct.category.categoryName}</TableCell>
                                         <TableCell align="center">{singleProduct.brand.brandName}</TableCell>
                                         <TableCell align="center">{singleProduct.price}$</TableCell>
+                                        <TableCell align="center">{singleProduct.discount}$</TableCell>
                                         <TableCell align="center">
                                             <img src={`http://localhost:3003/uploads/product/${singleProduct.image[0]}`} style={{ borderRadius: '10px' }} height={'60px'} width={'60px'} alt="image comes here" />
                                         </TableCell>
